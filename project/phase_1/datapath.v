@@ -15,8 +15,11 @@ module Datapath (
     // 32:1 bus select
     input  wire [4:0]  BusSel,
 
-    // 64-bit input to Z register (from ALU/mul/div result)
-    input  wire [63:0] Z_in,
+    // ---- ADDED: ALU control signals (start small, expand later) ----
+    input  wire        AND,
+    input  wire        OR,
+    input  wire        NOT_op,
+    input  wire        NEG,
 
     // outputs
     output wire [31:0] BusMuxOut,
@@ -62,7 +65,7 @@ module Datapath (
                 .clear(Clear),
                 .clock(Clock),
                 .enable(Rin[i]),
-                .BusMuxOut(BusMuxOut),   // <-- NOW BusMuxOut is internal from the mux
+                .BusMuxOut(BusMuxOut),
                 .BusMuxIn(R[i])
             );
         end
@@ -96,13 +99,40 @@ module Datapath (
     register LO_reg  (.clear(Clear), .clock(Clock), .enable(LOin),  .BusMuxOut(BusMuxOut), .BusMuxIn(LO));
 
     // ----------------------------
-    // 3) Z Register (64-bit)
+    // 3) Core wiring: Y -> ALU -> Z   (ADDED)
+    // ----------------------------
+    wire [31:0] A = Y;         // ALU A operand comes from Y
+    wire [31:0] B = BusMuxOut; // ALU B operand comes from the bus
+
+    reg  [63:0] alu_out;
+
+    always @(*) begin
+        alu_out = 64'b0;
+
+        // Put 32-bit results in low half for basic ops
+        if (AND) begin
+            alu_out = {32'b0, (A & B)};
+        end else if (OR) begin
+            alu_out = {32'b0, (A | B)};
+        end else if (NOT_op) begin
+            alu_out = {32'b0, (~B)};       // NOT typically applies to bus operand
+        end else if (NEG) begin
+            alu_out = {32'b0, (~B + 32'd1)}; // two's complement negate of B (uses +1)
+        end
+        // Later you will add ADD/SUB/SHIFT/ROTATE/MUL/DIV here
+    end
+
+    // Z register input comes from ALU output (per Step 3)
+    wire [63:0] Z_in_internal = alu_out;
+
+    // ----------------------------
+    // 4) Z Register (64-bit)  (CHANGED to use Z_in_internal)
     // ----------------------------
     register #(.DATA_WIDTH_IN(64), .DATA_WIDTH_OUT(64)) Z_reg (
         .clear(Clear),
         .clock(Clock),
         .enable(Zin),
-        .BusMuxOut(Z_in),
+        .BusMuxOut(Z_in_internal),
         .BusMuxIn(Z)
     );
 
@@ -110,7 +140,7 @@ module Datapath (
     assign Zhigh = Z[63:32];
 
     // ----------------------------
-    // 4) Bus Mux (sources -> BusMuxOut)
+    // 5) Bus Mux (sources -> BusMuxOut)
     // ----------------------------
     // Stubs for now (you'll replace when MDR/InPort/C exist)
     wire [31:0] MDR    = 32'b0;
