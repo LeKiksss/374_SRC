@@ -2,58 +2,58 @@ module Datapath (
     input  wire        Clock,
     input  wire        Clear,
 
-    // General purpose register write enables (one-hot)
-    input  wire [15:0]  Rin,
+    input  wire [15:0] Rin,
 
-    // Special register write enables
-    input  wire         PCin,
-    input  wire         IRin,
-    input  wire         Yin,
-    input  wire         MARin,
-    input  wire         HIin,
-    input  wire         LOin,
-    input  wire         Zin,
+    input  wire        PCin,
+    input  wire        IRin,
+    input  wire        Yin,
+    input  wire        MARin,
+    input  wire        HIin,
+    input  wire        LOin,
+    input  wire        Zin,
 
-    // Bus input to registers (from BusMux)
-    input  wire [31:0]  BusMuxOut,
+    // 32:1 bus select
+    input  wire [4:0]  BusSel,
 
     // 64-bit input to Z register (from ALU/mul/div result)
-    input  wire [63:0]  Z_in,
+    input  wire [63:0] Z_in,
 
-    // Outputs you may want to observe / connect to bus mux later
-    output wire [31:0]  PC,
-    output wire [31:0]  IR,
-    output wire [31:0]  Y,
-    output wire [31:0]  MAR,
-    output wire [31:0]  HI,
-    output wire [31:0]  LO,
-    output wire [63:0]  Z,
+    // outputs
+    output wire [31:0] BusMuxOut,
 
-    output wire [31:0]  Zlow,
-    output wire [31:0]  Zhigh,
+    output wire [31:0] PC,
+    output wire [31:0] IR,
+    output wire [31:0] Y,
+    output wire [31:0] MAR,
+    output wire [31:0] HI,
+    output wire [31:0] LO,
+    output wire [63:0] Z,
 
-    output wire [31:0]  R0,
-    output wire [31:0]  R1,
-    output wire [31:0]  R2,
-    output wire [31:0]  R3,
-    output wire [31:0]  R4,
-    output wire [31:0]  R5,
-    output wire [31:0]  R6,
-    output wire [31:0]  R7,
-    output wire [31:0]  R8,
-    output wire [31:0]  R9,
-    output wire [31:0]  R10,
-    output wire [31:0]  R11,
-    output wire [31:0]  R12,
-    output wire [31:0]  R13,
-    output wire [31:0]  R14,
-    output wire [31:0]  R15
+    output wire [31:0] Zlow,
+    output wire [31:0] Zhigh,
+
+    output wire [31:0] R0,
+    output wire [31:0] R1,
+    output wire [31:0] R2,
+    output wire [31:0] R3,
+    output wire [31:0] R4,
+    output wire [31:0] R5,
+    output wire [31:0] R6,
+    output wire [31:0] R7,
+    output wire [31:0] R8,
+    output wire [31:0] R9,
+    output wire [31:0] R10,
+    output wire [31:0] R11,
+    output wire [31:0] R12,
+    output wire [31:0] R13,
+    output wire [31:0] R14,
+    output wire [31:0] R15
 );
 
     // ----------------------------
     // 1) General Purpose Registers
     // ----------------------------
-    wire [31:0] R [0:15];  // internal array
+    wire [31:0] R [0:15];
 
     genvar i;
     generate
@@ -62,13 +62,12 @@ module Datapath (
                 .clear(Clear),
                 .clock(Clock),
                 .enable(Rin[i]),
-                .BusMuxOut(BusMuxOut),
+                .BusMuxOut(BusMuxOut),   // <-- NOW BusMuxOut is internal from the mux
                 .BusMuxIn(R[i])
             );
         end
     endgenerate
 
-    // Optional: expose as named outputs (nice for waveform + bus mux wiring)
     assign R0  = R[0];
     assign R1  = R[1];
     assign R2  = R[2];
@@ -89,41 +88,12 @@ module Datapath (
     // ----------------------------
     // 2) Special 32-bit Registers
     // ----------------------------
-    register PC_reg (
-        .clear(Clear), .clock(Clock), .enable(PCin),
-        .BusMuxOut(BusMuxOut),
-        .BusMuxIn(PC)
-    );
-
-    register IR_reg (
-        .clear(Clear), .clock(Clock), .enable(IRin),
-        .BusMuxOut(BusMuxOut),
-        .BusMuxIn(IR)
-    );
-
-    register Y_reg (
-        .clear(Clear), .clock(Clock), .enable(Yin),
-        .BusMuxOut(BusMuxOut),
-        .BusMuxIn(Y)
-    );
-
-    register MAR_reg (
-        .clear(Clear), .clock(Clock), .enable(MARin),
-        .BusMuxOut(BusMuxOut),
-        .BusMuxIn(MAR)
-    );
-
-    register HI_reg (
-        .clear(Clear), .clock(Clock), .enable(HIin),
-        .BusMuxOut(BusMuxOut),
-        .BusMuxIn(HI)
-    );
-
-    register LO_reg (
-        .clear(Clear), .clock(Clock), .enable(LOin),
-        .BusMuxOut(BusMuxOut),
-        .BusMuxIn(LO)
-    );
+    register PC_reg  (.clear(Clear), .clock(Clock), .enable(PCin),  .BusMuxOut(BusMuxOut), .BusMuxIn(PC));
+    register IR_reg  (.clear(Clear), .clock(Clock), .enable(IRin),  .BusMuxOut(BusMuxOut), .BusMuxIn(IR));
+    register Y_reg   (.clear(Clear), .clock(Clock), .enable(Yin),   .BusMuxOut(BusMuxOut), .BusMuxIn(Y));
+    register MAR_reg (.clear(Clear), .clock(Clock), .enable(MARin), .BusMuxOut(BusMuxOut), .BusMuxIn(MAR));
+    register HI_reg  (.clear(Clear), .clock(Clock), .enable(HIin),  .BusMuxOut(BusMuxOut), .BusMuxIn(HI));
+    register LO_reg  (.clear(Clear), .clock(Clock), .enable(LOin),  .BusMuxOut(BusMuxOut), .BusMuxIn(LO));
 
     // ----------------------------
     // 3) Z Register (64-bit)
@@ -132,11 +102,53 @@ module Datapath (
         .clear(Clear),
         .clock(Clock),
         .enable(Zin),
-        .BusMuxOut(Z_in),      // NOTE: here BusMuxOut is 64-bit input for Z
+        .BusMuxOut(Z_in),
         .BusMuxIn(Z)
     );
 
     assign Zlow  = Z[31:0];
     assign Zhigh = Z[63:32];
+
+    // ----------------------------
+    // 4) Bus Mux (sources -> BusMuxOut)
+    // ----------------------------
+    // Stubs for now (you'll replace when MDR/InPort/C exist)
+    wire [31:0] MDR    = 32'b0;
+    wire [31:0] InPort = 32'b0;
+    wire [31:0] C_se   = 32'b0;
+
+    reg [31:0] bus_mux_out;
+
+    always @(*) begin
+        case (BusSel)
+            5'd0:  bus_mux_out = R[0];
+            5'd1:  bus_mux_out = R[1];
+            5'd2:  bus_mux_out = R[2];
+            5'd3:  bus_mux_out = R[3];
+            5'd4:  bus_mux_out = R[4];
+            5'd5:  bus_mux_out = R[5];
+            5'd6:  bus_mux_out = R[6];
+            5'd7:  bus_mux_out = R[7];
+            5'd8:  bus_mux_out = R[8];
+            5'd9:  bus_mux_out = R[9];
+            5'd10: bus_mux_out = R[10];
+            5'd11: bus_mux_out = R[11];
+            5'd12: bus_mux_out = R[12];
+            5'd13: bus_mux_out = R[13];
+            5'd14: bus_mux_out = R[14];
+            5'd15: bus_mux_out = R[15];
+            5'd16: bus_mux_out = HI;
+            5'd17: bus_mux_out = LO;
+            5'd18: bus_mux_out = Zhigh;
+            5'd19: bus_mux_out = Zlow;
+            5'd20: bus_mux_out = PC;
+            5'd21: bus_mux_out = MDR;
+            5'd22: bus_mux_out = InPort;
+            5'd23: bus_mux_out = C_se;
+            default: bus_mux_out = 32'b0;
+        endcase
+    end
+
+    assign BusMuxOut = bus_mux_out;
 
 endmodule
