@@ -15,7 +15,7 @@ module Datapath (
     // 32:1 bus select
     input  wire [4:0]  BusSel,
 
-    // ---- ADDED: ALU control signals (start small, expand later) ----
+    // ALU Control Signals
     input  wire        AND,
     input  wire        OR,
     input  wire        NOT_op,
@@ -99,10 +99,20 @@ module Datapath (
     register LO_reg  (.clear(Clear), .clock(Clock), .enable(LOin),  .BusMuxOut(BusMuxOut), .BusMuxIn(LO));
 
     // ----------------------------
-    // 3) Core wiring: Y -> ALU -> Z   (ADDED)
+    // 3) Core wiring: Y -> ALU -> Z
     // ----------------------------
     wire [31:0] A = Y;         // ALU A operand comes from Y
     wire [31:0] B = BusMuxOut; // ALU B operand comes from the bus
+
+    // ----- NEG support using inc32 (no + / - in ALU logic) -----
+    wire [31:0] B_not = ~B;   // invert bits
+    wire [31:0] B_neg;        // (~B) + 1 computed via inc32 (no '+')
+
+    // incrementer instance: B_neg = B_not + 1
+    inc32 NEG_INC (
+        .in(B_not),
+        .out(B_neg)
+    );
 
     reg  [63:0] alu_out;
 
@@ -117,7 +127,7 @@ module Datapath (
         end else if (NOT_op) begin
             alu_out = {32'b0, (~B)};       // NOT typically applies to bus operand
         end else if (NEG) begin
-            alu_out = {32'b0, (~B + 32'd1)}; // two's complement negate of B (uses +1)
+            alu_out = {32'b0, B_neg};      // two's complement negate of B via inc32
         end
         // Later you will add ADD/SUB/SHIFT/ROTATE/MUL/DIV here
     end
@@ -126,7 +136,7 @@ module Datapath (
     wire [63:0] Z_in_internal = alu_out;
 
     // ----------------------------
-    // 4) Z Register (64-bit)  (CHANGED to use Z_in_internal)
+    // 4) Z Register (64-bit)
     // ----------------------------
     register #(.DATA_WIDTH_IN(64), .DATA_WIDTH_OUT(64)) Z_reg (
         .clear(Clear),
