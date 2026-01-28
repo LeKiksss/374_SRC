@@ -20,6 +20,12 @@ module Datapath (
     input  wire        OR,
     input  wire        NOT_op,
     input  wire        NEG,
+	 
+	 // MDR
+	 input  wire        MDRin,
+	 input  wire        Read,
+	 input  wire [31:0] Mdatain,
+
 
     // outputs
     output wire [31:0] BusMuxOut,
@@ -153,7 +159,9 @@ module Datapath (
     // 5) Bus Mux (sources -> BusMuxOut)
     // ----------------------------
     // Stubs for now (you'll replace when MDR/InPort/C exist)
-    wire [31:0] MDR    = 32'b0;
+	 
+	 wire [31:0] MDR_data;
+    wire [31:0] MDR    = MDR_data;
     wire [31:0] InPort = 32'b0;
     wire [31:0] C_se   = 32'b0;
 
@@ -190,5 +198,16 @@ module Datapath (
     end
 
     assign BusMuxOut = bus_mux_out;
+
+	 MDR MDR_reg (
+	 	  .Clock(Clock),
+		  .Clear(Clear),
+		  .MDRin(MDRin),
+		  .Read(Read),
+		  .BusMuxOut(BusMuxOut),
+		  .Mdatain(Mdatain),
+		  .MDRout(MDR_data)
+	 );
+
 
 endmodule
