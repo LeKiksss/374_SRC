@@ -1,0 +1,49 @@
+# =========================
+# Quartus Prime
+# =========================
+db/
+incremental_db/
+output_files/
+simulation/
+
+*.rpt
+*.chg
+*.summary
+*.done
+*.smsg
+*.qws
+*.jdi
+*.pin
+*.sof
+*.pof
+*.jbc
+*.map
+*.fit
+*.asm
+*.sta
+
+# =========================
+# ModelSim / Questa
+# =========================
+vsim.wlf
+transcript
+modelsim.ini
+work/
+
+# =========================
+# Temp / backup
+# =========================
+*.bak
+*.tmp
+*.swp
+*.lock
+*.log
+
+# =========================
+# OS / editor
+# =========================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.code-workspace
