@@ -158,7 +158,6 @@ module Datapath (
     // ----------------------------
     // 5) Bus Mux (sources -> BusMuxOut)
     // ----------------------------
-    // Stubs for now (you'll replace when MDR/InPort/C exist)
 	 
 	 wire [31:0] MDR_data;
     wire [31:0] MDR    = MDR_data;
