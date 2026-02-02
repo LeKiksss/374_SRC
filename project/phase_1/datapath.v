@@ -25,6 +25,9 @@ module Datapath (
 	 input  wire 		  SHL,
 	 input  wire 		  ROR,
 	 input  wire 		  ROL,
+	 input  wire 		  ADD,
+	 input  wire		  SUB,
+	 input  wire		  MUL,
 
 
     // MDR
@@ -132,7 +135,7 @@ module Datapath (
 
     wire [63:0] logic_out;
 
-    alu_logic U_LOGIC (
+    alu_core U_LOGIC (
         .AND(AND),
         .OR(OR),
         .NOT_op(NOT_op),
@@ -143,6 +146,10 @@ module Datapath (
 		  .SHL(SHL),
 		  .ROR(ROR),
 		  .ROL(ROL),
+		  
+		  .ADD(ADD),
+		  .SUB(SUB),
+		  .MUL(MUL),
 		  
         .A(A),
         .B(B),

@@ -14,6 +14,9 @@ module alu_core (
     // Add / sub controls
     input  wire        ADD,
     input  wire        SUB,
+	 
+	 // Multiply controls
+	 input wire			  MUL,
 
     input  wire [31:0] A,   // from Y
     input  wire [31:0] B,   // from bus (also holds shift amount)
@@ -44,21 +47,27 @@ module alu_core (
     // ADD/SUB support (NO + or -): ripple-carry adder approach
     // A - B = A + (~B) + 1
     // ---------------------------------------------------------
-    wire        sub_mode = SUB;               // SUB=1 => subtract
-    wire [31:0] Bx       = B ^ {32{sub_mode}}; // invert B if subtract
-    wire [31:0] addsub_s;
-    wire        addsub_cout;
+		wire [31:0] addsub_s;
+		wire        addsub_cout;
 
-    // 32-bit ripple-carry adder (you create this module: adder32.v)
-    adder32 U_ADDER32 (
-        .A(A),
-        .B(Bx),
-        .Cin(sub_mode),
-        .S(addsub_s),
-        .Cout(addsub_cout)
-    );
-
+		addsub32 U_ADDSUB32 (
+			 .A(A),
+			 .B(B),
+			 .Sub(SUB),
+			 .S(addsub_s),
+			 .Cout(addsub_cout)
+		);
     reg [63:0] result;
+	 
+	 // Multiply support 
+	 wire [63:0] mul_out;
+
+		mult32x32_booth U_MUL (
+			.A(A),
+			.B(B),
+			.P(mul_out)
+		);
+
 
     always @(*) begin
         result = 64'b0;
@@ -90,8 +99,10 @@ module alu_core (
             result = {32'b0, addsub_s};
         end else if (SUB) begin
             result = {32'b0, addsub_s};
-        end
-    end
+        end else if (MUL) begin
+				result = mul_out;			// full 64-bit product goes into Z
+		  end
+	 end
 
     assign out = result;
 
