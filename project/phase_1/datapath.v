@@ -15,17 +15,16 @@ module Datapath (
     // 32:1 bus select
     input  wire [4:0]  BusSel,
 
-    // ALU Control Signals
+    // ALU Control Signals (logic ops for now)
     input  wire        AND,
     input  wire        OR,
     input  wire        NOT_op,
     input  wire        NEG,
-	 
-	 // MDR
-	 input  wire        MDRin,
-	 input  wire        Read,
-	 input  wire [31:0] Mdatain,
 
+    // MDR
+    input  wire        MDRin,
+    input  wire        Read,
+    input  wire [31:0] Mdatain,
 
     // outputs
     output wire [31:0] BusMuxOut,
@@ -105,44 +104,43 @@ module Datapath (
     register LO_reg  (.clear(Clear), .clock(Clock), .enable(LOin),  .BusMuxOut(BusMuxOut), .BusMuxIn(LO));
 
     // ----------------------------
-    // 3) Core wiring: Y -> ALU -> Z
+    // 3) MDR (special register with 2 input sources)
+    // ----------------------------
+    wire [31:0] MDR_data;
+
+    MDR MDR_reg (
+        .Clock(Clock),
+        .Clear(Clear),
+        .MDRin(MDRin),
+        .Read(Read),
+        .BusMuxOut(BusMuxOut),
+        .Mdatain(Mdatain),
+        .MDRout(MDR_data)
+    );
+
+    // ----------------------------
+    // 4) Core wiring: Y -> ALU (logic) -> Z
     // ----------------------------
     wire [31:0] A = Y;         // ALU A operand comes from Y
     wire [31:0] B = BusMuxOut; // ALU B operand comes from the bus
 
-    // ----- NEG support using inc32 (no + / - in ALU logic) -----
-    wire [31:0] B_not = ~B;   // invert bits
-    wire [31:0] B_neg;        // (~B) + 1 computed via inc32 (no '+')
+    wire [63:0] logic_out;
 
-    // incrementer instance: B_neg = B_not + 1
-    inc32 NEG_INC (
-        .in(B_not),
-        .out(B_neg)
+    alu_logic U_LOGIC (
+        .AND(AND),
+        .OR(OR),
+        .NOT_op(NOT_op),
+        .NEG(NEG),
+        .A(A),
+        .B(B),
+        .out(logic_out)
     );
 
-    reg  [63:0] alu_out;
-
-    always @(*) begin
-        alu_out = 64'b0;
-
-        // Put 32-bit results in low half for basic ops
-        if (AND) begin
-            alu_out = {32'b0, (A & B)};
-        end else if (OR) begin
-            alu_out = {32'b0, (A | B)};
-        end else if (NOT_op) begin
-            alu_out = {32'b0, (~B)};       // NOT typically applies to bus operand
-        end else if (NEG) begin
-            alu_out = {32'b0, B_neg};      // two's complement negate of B via inc32
-        end
-        // Later you will add ADD/SUB/SHIFT/ROTATE/MUL/DIV here
-    end
-
-    // Z register input comes from ALU output (per Step 3)
-    wire [63:0] Z_in_internal = alu_out;
+    // For now, ALU output = logic output (later you'll mux in shifts/add/mul/div)
+    wire [63:0] Z_in_internal = logic_out;
 
     // ----------------------------
-    // 4) Z Register (64-bit)
+    // 5) Z Register (64-bit)
     // ----------------------------
     register #(.DATA_WIDTH_IN(64), .DATA_WIDTH_OUT(64)) Z_reg (
         .clear(Clear),
@@ -156,11 +154,8 @@ module Datapath (
     assign Zhigh = Z[63:32];
 
     // ----------------------------
-    // 5) Bus Mux (sources -> BusMuxOut)
+    // 6) Bus Mux (sources -> BusMuxOut)
     // ----------------------------
-	 
-	 wire [31:0] MDR_data;
-    wire [31:0] MDR    = MDR_data;
     wire [31:0] InPort = 32'b0;
     wire [31:0] C_se   = 32'b0;
 
@@ -189,7 +184,7 @@ module Datapath (
             5'd18: bus_mux_out = Zhigh;
             5'd19: bus_mux_out = Zlow;
             5'd20: bus_mux_out = PC;
-            5'd21: bus_mux_out = MDR;
+            5'd21: bus_mux_out = MDR_data;
             5'd22: bus_mux_out = InPort;
             5'd23: bus_mux_out = C_se;
             default: bus_mux_out = 32'b0;
@@ -197,16 +192,5 @@ module Datapath (
     end
 
     assign BusMuxOut = bus_mux_out;
-
-	 MDR MDR_reg (
-	 	  .Clock(Clock),
-		  .Clear(Clear),
-		  .MDRin(MDRin),
-		  .Read(Read),
-		  .BusMuxOut(BusMuxOut),
-		  .Mdatain(Mdatain),
-		  .MDRout(MDR_data)
-	 );
-
 
 endmodule
