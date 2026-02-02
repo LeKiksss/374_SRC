@@ -20,6 +20,12 @@ module Datapath (
     input  wire        OR,
     input  wire        NOT_op,
     input  wire        NEG,
+	 input  wire 		  SHR,
+	 input  wire 		  SHRA,
+	 input  wire 		  SHL,
+	 input  wire 		  ROR,
+	 input  wire 		  ROL,
+
 
     // MDR
     input  wire        MDRin,
@@ -131,6 +137,13 @@ module Datapath (
         .OR(OR),
         .NOT_op(NOT_op),
         .NEG(NEG),
+		  
+		  .SHR(SHR),
+		  .SHRA(SHRA),
+		  .SHL(SHL),
+		  .ROR(ROR),
+		  .ROL(ROL),
+		  
         .A(A),
         .B(B),
         .out(logic_out)
