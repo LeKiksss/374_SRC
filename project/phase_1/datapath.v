@@ -28,6 +28,7 @@ module Datapath (
 	 input  wire 		  ADD,
 	 input  wire		  SUB,
 	 input  wire		  MUL,
+	 input  wire		  DIV,
 
 
     // MDR
@@ -150,6 +151,7 @@ module Datapath (
 		  .ADD(ADD),
 		  .SUB(SUB),
 		  .MUL(MUL),
+		  .DIV(DIV),
 		  
         .A(A),
         .B(B),

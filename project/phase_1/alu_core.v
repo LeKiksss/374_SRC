@@ -15,8 +15,9 @@ module alu_core (
     input  wire        ADD,
     input  wire        SUB,
 	 
-	 // Multiply controls
+	 // Multiply / Divide controls
 	 input wire			  MUL,
+	 input wire			  DIV,
 
     input  wire [31:0] A,   // from Y
     input  wire [31:0] B,   // from bus (also holds shift amount)
@@ -67,6 +68,16 @@ module alu_core (
 			.B(B),
 			.P(mul_out)
 		);
+		
+	 // Divide support
+	 wire [63:0] div_out;
+
+	div32_nonrestoring U_DIV (
+		.dividend(A),   // Typically: Y holds dividend
+		.divisor(B),    // Bus holds divisor
+		.result(div_out)
+	);
+
 
 
     always @(*) begin
@@ -101,6 +112,8 @@ module alu_core (
             result = {32'b0, addsub_s};
         end else if (MUL) begin
 				result = mul_out;			// full 64-bit product goes into Z
+		  end else if (DIV) begin
+				result = div_out; 		// {remainder, quotient}
 		  end
 	 end
 
