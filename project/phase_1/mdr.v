@@ -8,11 +8,8 @@ module MDR (
     output reg  [31:0] MDRout
 );
 
+    // Input mux: choose memory data when Read=1, else choose bus
     wire [31:0] MDMuxOut;
-
-    // Select input source:
-    // Read=1  -> take Mdatain (memory data)
-    // Read=0  -> take BusMuxOut (bus data)
     assign MDMuxOut = (Read) ? Mdatain : BusMuxOut;
 
     always @(posedge Clock) begin
