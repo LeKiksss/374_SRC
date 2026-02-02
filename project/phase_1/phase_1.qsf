@@ -54,3 +54,5 @@ set_global_assignment -name VERILOG_FILE testbench.v
 set_global_assignment -name VERILOG_FILE datapath.v
 set_global_assignment -name VERILOG_FILE inc32.v
 set_global_assignment -name VERILOG_FILE mdr.v
+set_global_assignment -name VERILOG_FILE adder32.v
+set_global_assignment -name VERILOG_FILE addsub32.v

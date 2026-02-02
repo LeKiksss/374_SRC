@@ -1,4 +1,4 @@
-module alu_logic (
+module alu_core (
     input  wire        AND,
     input  wire        OR,
     input  wire        NOT_op,
@@ -10,6 +10,10 @@ module alu_logic (
     input  wire        SHL,
     input  wire        ROR,
     input  wire        ROL,
+
+    // Add / sub controls
+    input  wire        ADD,
+    input  wire        SUB,
 
     input  wire [31:0] A,   // from Y
     input  wire [31:0] B,   // from bus (also holds shift amount)
@@ -35,6 +39,24 @@ module alu_logic (
     wire [63:0] AA = {A, A};
     wire [31:0] rol_a = (AA << shamt)[63:32];
     wire [31:0] ror_a = (AA >> shamt)[31:0];
+
+    // ---------------------------------------------------------
+    // ADD/SUB support (NO + or -): ripple-carry adder approach
+    // A - B = A + (~B) + 1
+    // ---------------------------------------------------------
+    wire        sub_mode = SUB;               // SUB=1 => subtract
+    wire [31:0] Bx       = B ^ {32{sub_mode}}; // invert B if subtract
+    wire [31:0] addsub_s;
+    wire        addsub_cout;
+
+    // 32-bit ripple-carry adder (you create this module: adder32.v)
+    adder32 U_ADDER32 (
+        .A(A),
+        .B(Bx),
+        .Cin(sub_mode),
+        .S(addsub_s),
+        .Cout(addsub_cout)
+    );
 
     reg [63:0] result;
 
@@ -62,6 +84,12 @@ module alu_logic (
             result = {32'b0, rol_a};
         end else if (ROR) begin
             result = {32'b0, ror_a};
+
+        // ADD / SUB (share same adder result; mode controlled by SUB)
+        end else if (ADD) begin
+            result = {32'b0, addsub_s};
+        end else if (SUB) begin
+            result = {32'b0, addsub_s};
         end
     end
 
