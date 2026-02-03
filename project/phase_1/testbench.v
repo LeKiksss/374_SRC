@@ -90,6 +90,12 @@ module datapath_tb;
         forever #10 Clock = ~Clock;
     end
 
+    // Stop simulation after enough cycles for AND sequence (stops "run -all" from running forever)
+    initial begin
+        #2000;   // 2 us: enough for reg loads + fetch + execute, then extra cycles so R2=0x04 is visible
+        $stop;   // pause so you can inspect waves; use $finish; to exit
+    end
+
     // FSM state transitions
     always @(posedge Clock) begin
         case (Present_state)
