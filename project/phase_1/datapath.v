@@ -31,6 +31,9 @@ module Datapath (
 	 input  wire		  DIV,
 
 
+    // PC increment (T0: Z <- PC+1)
+    input  wire        IncPC,
+
     // MDR
     input  wire        MDRin,
     input  wire        Read,
@@ -158,8 +161,10 @@ module Datapath (
         .out(logic_out)
     );
 
-    // For now, ALU output = logic output (later you'll mux in shifts/add/mul/div)
-    wire [63:0] Z_in_internal = logic_out;
+    // Z input: when IncPC, Z loads PC+1 (bus holds PC); else ALU output
+    wire [31:0] inc_out;
+    inc32 U_INC (.in(BusMuxOut), .out(inc_out));
+    wire [63:0] Z_in_internal = IncPC ? {32'b0, inc_out} : logic_out;
 
     // ----------------------------
     // 5) Z Register (64-bit)

@@ -16,6 +16,9 @@ module Datapath_top (
     input  wire        LOin,
     input  wire        Zin,
 
+    // PC increment (T0: Z <- PC+1)
+    input  wire        IncPC,
+
     // MDR control
     input  wire        MDRin,
     input  wire        Read,
@@ -137,6 +140,7 @@ module Datapath_top (
         .HIin(HIin),
         .LOin(LOin),
         .Zin(Zin),
+        .IncPC(IncPC),
 
         .BusSel(BusSel),
 

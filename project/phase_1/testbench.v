@@ -1,13 +1,22 @@
-// datapath_tb.v
+// datapath_tb.v - AND instruction testbench (and R2, R5, R6)
+// Matches handout control sequence; DUT is Datapath_top with Rin[15:0], Rout[15:0].
 `timescale 1ns/10ps
 
 module datapath_tb;
 
-    reg PCout, Zlowout, MDRout, R5out, R6out; // add any other signals to see in your simulation
-    reg MARin, Zin, PCin, MDRin, IRin, Yin;
-    reg IncPC, Read, AND, R2in, R5in, R6in;
-    reg Clock;
-    reg [31:0] Mdatain;
+    reg         Clock, Clear;
+
+    // Individual register in/out (drive Rin[15:0], Rout[15:0])
+    reg [15:0]  Rin, Rout;
+
+    reg         PCout, Zlowout, Zhighout, MDRout, HIout, LOout;
+    reg         MARin, Zin, PCin, MDRin, IRin, Yin, HIin, LOin;
+    reg         IncPC, Read;
+
+    // ALU control (AND test uses AND only)
+    reg         AND, OR, NOT_op, NEG, SHR, SHRA, SHL, ROR, ROL, ADD, SUB, MUL, DIV;
+
+    reg [31:0]  Mdatain;
 
     parameter Default     = 4'b0000,
               Reg_load1a  = 4'b0001,
@@ -25,11 +34,54 @@ module datapath_tb;
 
     reg [3:0] Present_state = Default;
 
-    Datapath DUT (
-        PCout, Zlowout, MDRout, R5out, R6out,
-        MARin, Zin, PCin, MDRin, IRin, Yin,
-        IncPC, Read, AND, R2in, R5in, R6in,
-        Clock, Mdatain
+    // DUT: Datapath_top (Rin/Rout are 16-bit; special outs are separate)
+    Datapath_top DUT (
+        .Clock(Clock),
+        .Clear(Clear),
+        .Rin(Rin),
+        .Rout(Rout),
+        .PCin(PCin),
+        .IRin(IRin),
+        .Yin(Yin),
+        .MARin(MARin),
+        .HIin(HIin),
+        .LOin(LOin),
+        .Zin(Zin),
+        .IncPC(IncPC),
+        .MDRin(MDRin),
+        .Read(Read),
+        .Mdatain(Mdatain),
+        .PCout(PCout),
+        .MDRout(MDRout),
+        .HIout(HIout),
+        .LOout(LOout),
+        .Zhighout(Zhighout),
+        .Zlowout(Zlowout),
+        .AND(AND),
+        .OR(OR),
+        .NOT_op(NOT_op),
+        .NEG(NEG),
+        .SHR(SHR),
+        .SHRA(SHRA),
+        .SHL(SHL),
+        .ROR(ROR),
+        .ROL(ROL),
+        .ADD(ADD),
+        .SUB(SUB),
+        .MUL(MUL),
+        .DIV(DIV),
+        .BusMuxOut(),
+        .PC(),
+        .IR(),
+        .Y(),
+        .MAR(),
+        .HI(),
+        .LO(),
+        .Z(),
+        .Zhigh(),
+        .Zlow(),
+        .R0(), .R1(), .R2(), .R3(), .R4(), .R5(), .R6(), .R7(),
+        .R8(), .R9(), .R10(), .R11(), .R12(), .R13(), .R14(), .R15()
     );
 
     // Clock generation
@@ -53,118 +105,118 @@ module datapath_tb;
             T2          : Present_state = T3;
             T3          : Present_state = T4;
             T4          : Present_state = T5;
+            T5          : Present_state = T5;  // hold
         endcase
     end
 
-    // Control signal assertions
+    // Control signal assertions (AND: and R2, R5, R6)
     always @(Present_state) begin
-        case (Present_state)
+        // Default: de-assert all
+        Clear   = 0;
+        Rin     = 16'b0;
+        Rout    = 16'b0;
+        PCout   = 0;
+        Zlowout = 0;
+        Zhighout= 0;
+        MDRout  = 0;
+        HIout   = 0;
+        LOout   = 0;
+        MARin   = 0;
+        Zin     = 0;
+        PCin    = 0;
+        MDRin   = 0;
+        IRin    = 0;
+        Yin     = 0;
+        HIin    = 0;
+        LOin    = 0;
+        IncPC   = 0;
+        Read    = 0;
+        AND     = 0;
+        OR      = 0;
+        NOT_op  = 0;
+        NEG     = 0;
+        SHR     = 0;
+        SHRA    = 0;
+        SHL     = 0;
+        ROR     = 0;
+        ROL     = 0;
+        ADD     = 0;
+        SUB     = 0;
+        MUL     = 0;
+        DIV     = 0;
+        Mdatain = 32'h00000000;
 
-            Default: begin
-                PCout   <= 0;
-                Zlowout <= 0;
-                MDRout  <= 0;
-                R3out   <= 0;
-                R7out   <= 0;
-                MARin   <= 0;
-                Zin     <= 0;
-                PCin    <= 0;
-                MDRin   <= 0;
-                IRin    <= 0;
-                Yin     <= 0;
-                IncPC   <= 0;
-                Read    <= 0;
-                AND     <= 0;
-                R2in    <= 0;
-                R5in    <= 0;
-                R6in    <= 0;
-                Mdatain <= 32'h00000000;
-            end
+        case (Present_state)
+            Default: ;
 
             Reg_load1a: begin
-                Mdatain <= 32'h00000034;
-                Read    = 0;
-                MDRin   = 0;
-                Read    <= 1;
-                MDRin   <= 1;
-                #15 Read <= 0;
-                    MDRin <= 0;
+                Mdatain = 32'h00000034;
+                Read    = 1;
+                MDRin   = 1;
             end
 
             Reg_load1b: begin
-                MDRout <= 1;
-                R5in   <= 1;
-                #15 MDRout <= 0;
-                    R5in   <= 0;
+                MDRout  = 1;
+                Rin[5]  = 1;   // R5in
             end
 
             Reg_load2a: begin
-                Mdatain <= 32'h00000045;
-                Read    <= 1;
-                MDRin   <= 1;
-                #15 Read  <= 0;
-                    MDRin <= 0;
+                Mdatain = 32'h00000045;
+                Read    = 1;
+                MDRin   = 1;
             end
 
             Reg_load2b: begin
-                MDRout <= 1;
-                R6in   <= 1;
-                #15 MDRout <= 0;
-                    R6in   <= 0;
+                MDRout  = 1;
+                Rin[6]  = 1;   // R6in
             end
 
             Reg_load3a: begin
-                Mdatain <= 32'h00000067;
-                Read    <= 1;
-                MDRin   <= 1;
-                #15 Read  <= 0;
-                    MDRin <= 0;
+                Mdatain = 32'h00000067;
+                Read    = 1;
+                MDRin   = 1;
             end
 
             Reg_load3b: begin
-                MDRout <= 1;
-                R2in   <= 1;
-                #15 MDRout <= 0;
-                    R2in   <= 0;
+                MDRout  = 1;
+                Rin[2]  = 1;   // R2in (pre-load R2; will be overwritten by result in T5)
             end
 
             T0: begin
-                PCout <= 1;
-                MARin <= 1;
-                IncPC <= 1;
-                Zin   <= 1;
+                PCout   = 1;
+                MARin   = 1;
+                IncPC   = 1;
+                Zin     = 1;
             end
 
             T1: begin
-                Zlowout <= 1;
-                PCin    <= 1;
-                Read    <= 1;
-                MDRin   <= 1;
-                Mdatain <= 32'h112B0000;
+                Zlowout = 1;
+                PCin    = 1;
+                Read    = 1;
+                MDRin   = 1;
+                Mdatain = 32'h112B0000;   // opcode for "and R2, R5, R6"
             end
 
             T2: begin
-                MDRout <= 1;
-                IRin   <= 1;
-                10
+                MDRout  = 1;
+                IRin    = 1;
             end
 
             T3: begin
-                R5out <= 1;
-                Yin   <= 1;
+                Rout[5] = 1;   // R5out
+                Yin     = 1;
             end
 
             T4: begin
-                R6out <= 1;
-                AND   <= 1;
-                Zin   <= 1;
+                Rout[6] = 1;   // R6out
+                AND     = 1;
+                Zin     = 1;
             end
 
             T5: begin
-                Zlowout <= 1;
-                R2in    <= 1;
+                Zlowout = 1;
+                Rin[2]  = 1;   // R2in <- result (R5 & R6)
             end
-
         endcase
     end
 
