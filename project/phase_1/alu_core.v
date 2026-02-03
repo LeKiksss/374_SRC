@@ -39,10 +39,12 @@ module alu_core (
     );
 
     // Rotate trick (avoids "32 - shamt"):
-    // Use {A,A} and shift, then take the correct 32-bit slice
+    // Use {A,A} and shift, then take the correct 32-bit slice (no part-select on expr in older Verilog)
     wire [63:0] AA = {A, A};
-    wire [31:0] rol_a = (AA << shamt)[63:32];
-    wire [31:0] ror_a = (AA >> shamt)[31:0];
+    wire [63:0] AA_shl = AA << shamt;
+    wire [63:0] AA_shr = AA >> shamt;
+    wire [31:0] rol_a = AA_shl[63:32];
+    wire [31:0] ror_a = AA_shr[31:0];
 
     // ---------------------------------------------------------
     // ADD/SUB support (NO + or -): ripple-carry adder approach
