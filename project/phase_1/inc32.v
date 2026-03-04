@@ -4,7 +4,7 @@ module inc32 (
 );
     wire [31:0] carry;
 
-    // Add 1: out = in + 1
+    // Ripple‑carry incrementer: out = in + 1
     assign out[0]  = ~in[0];
     assign carry[0] = in[0];
 

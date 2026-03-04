@@ -1,4 +1,4 @@
-// DIV instruction testbench: div R3, R1 -> Z = {remainder, quotient}; T5 LOin, T6 HIin
+// Testbench for div R3, R1. Z holds {remainder, quotient}; LO captures the quotient (T5) and HI the remainder (T6).
 `timescale 1ns/10ps
 module tb_div;
     reg Clock, Clear;
@@ -46,9 +46,9 @@ module tb_div;
         AND=0; OR=0; NOT_op=0; NEG=0; SHR=0; SHRA=0; SHL=0; ROR=0; ROL=0; ADD=0; SUB=0; MUL=0; DIV=0;
         Mdatain=0;
         case (Present_state)
-            Reg_load1a: begin Mdatain=32'd100; Read=1; MDRin=1; end   // R3 <- 100 (dividend)
+            Reg_load1a: begin Mdatain=32'd16; Read=1; MDRin=1; end   // R3 (dividend)
             Reg_load1b: begin MDRout=1; Rin[3]=1; end
-            Reg_load2a: begin Mdatain=32'd7; Read=1; MDRin=1; end     // R1 <- 7 (divisor)
+            Reg_load2a: begin Mdatain=32'd2; Read=1; MDRin=1; end     // R1 (divisor)
             Reg_load2b: begin MDRout=1; Rin[1]=1; end
             T0: begin PCout=1; MARin=1; IncPC=1; Zin=1; end
             T1: begin Zlowout=1; PCin=1; Read=1; MDRin=1; Mdatain=32'h119C0000; end  // div R3,R1

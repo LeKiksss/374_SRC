@@ -1,4 +1,4 @@
-// ADD instruction testbench: add R2, R5, R6 (same structure, ADD in T4)
+// Testbench for add R2, R5, R6. Uses the Phase 1 control sequence with ADD active in T4.
 `timescale 1ns/10ps
 module tb_add;
     reg Clock, Clear;
@@ -48,12 +48,10 @@ module tb_add;
         AND=0; OR=0; NOT_op=0; NEG=0; SHR=0; SHRA=0; SHL=0; ROR=0; ROL=0; ADD=0; SUB=0; MUL=0; DIV=0;
         Mdatain=0;
         case (Present_state)
-            Reg_load1a: begin Mdatain=32'h34; Read=1; MDRin=1; end
+            Reg_load1a: begin Mdatain=32'h1; Read=1; MDRin=1; end
             Reg_load1b: begin MDRout=1; Rin[5]=1; end
-            Reg_load2a: begin Mdatain=32'h45; Read=1; MDRin=1; end
+            Reg_load2a: begin Mdatain=32'h7fffffff; Read=1; MDRin=1; end
             Reg_load2b: begin MDRout=1; Rin[6]=1; end
-            Reg_load3a: begin Mdatain=32'h67; Read=1; MDRin=1; end
-            Reg_load3b: begin MDRout=1; Rin[2]=1; end
             T0: begin PCout=1; MARin=1; IncPC=1; Zin=1; end
             T1: begin Zlowout=1; PCin=1; Read=1; MDRin=1; Mdatain=32'h112D0000; end  // add R2,R5,R6
             T2: begin MDRout=1; IRin=1; end

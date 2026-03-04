@@ -1,4 +1,4 @@
-// SHR instruction testbench: shr R7, R0, R4 (R0 value, shift count in R4). One-time shift for simplicity.
+// Testbench for shr R7, R0, R4. R0 holds the value, R4 holds the shift count; we do a single logical shift right.
 `timescale 1ns/10ps
 module tb_shr;
     reg Clock, Clear;

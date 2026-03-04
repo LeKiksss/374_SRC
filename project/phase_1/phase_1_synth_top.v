@@ -1,7 +1,6 @@
-// Synthesis-only top: same design as Datapath_top but with minimal outputs
-// so the design fits in the FPGA (device has 224 output pins; full datapath has 864).
-// Use this as TOP_LEVEL_ENTITY for Full Compilation. For simulation, use
-// testbench with Datapath_top (full visibility of R0..R15, etc.).
+// Lightweight top-level wrapper around Datapath_top for synthesis.
+// Only exposes a small set of outputs so the design fits the FPGA I/O limits.
+// Use this as the TOP_LEVEL_ENTITY for full compilation; keep Datapath_top for simulation.
 module phase_1_synth_top (
     input  wire        Clock,
     input  wire        Clear,

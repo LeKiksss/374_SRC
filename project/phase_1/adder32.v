@@ -5,9 +5,9 @@ module adder32 (
     output wire [31:0] S,
     output wire        Cout
 );
-    wire [31:0] C; // internal carries
+    wire [31:0] C; // internal carry chain
 
-    // bit 0
+    // Least significant bit uses the external carry‑in
     assign S[0] = A[0] ^ B[0] ^ Cin;
     assign C[0] = (A[0] & B[0]) | (A[0] & Cin) | (B[0] & Cin);
 

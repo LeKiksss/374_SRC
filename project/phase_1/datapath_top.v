@@ -2,12 +2,10 @@ module Datapath_top (
     input  wire        Clock,
     input  wire        Clear,
 
-    // ----------------------------
-    // WRITE enables (one-hot for GPRs)
-    // ----------------------------
+    // One‑hot write enables for the sixteen general‑purpose registers
     input  wire [15:0] Rin,
 
-    // Special register write enables
+    // Write enables for the other architectural registers
     input  wire        PCin,
     input  wire        IRin,
     input  wire        Yin,
@@ -16,17 +14,15 @@ module Datapath_top (
     input  wire        LOin,
     input  wire        Zin,
 
-    // PC increment (T0: Z <- PC+1)
+    // Request to load PC+1 into Z
     input  wire        IncPC,
 
-    // MDR control
+    // Control and data for the MDR
     input  wire        MDRin,
     input  wire        Read,
     input  wire [31:0] Mdatain,
 
-    // ----------------------------
-    // BUS "out" controls (one-hot sources driving the bus)
-    // ----------------------------
+    // One‑hot sources that are allowed to drive the shared bus
     input  wire [15:0] Rout,      // R0out..R15out one-hot
     input  wire        PCout,
     input  wire        MDRout,
@@ -36,9 +32,7 @@ module Datapath_top (
     input  wire        Zlowout,
     // (later) input wire InPortout, Cout, etc.
 
-    // ----------------------------
-    // ALU controls
-    // ----------------------------
+    // ALU operation control signals
     input  wire        AND,
     input  wire        OR,
     input  wire        NOT_op,
@@ -53,9 +47,7 @@ module Datapath_top (
     input  wire        MUL,
     input  wire        DIV,
 
-    // ----------------------------
-    // Outputs for waveform visibility
-    // ----------------------------
+    // Datapath visibility for simulation and debugging
     output wire [31:0] BusMuxOut,
     output wire [31:0] PC,
     output wire [31:0] IR,
@@ -66,6 +58,13 @@ module Datapath_top (
     output wire [63:0] Z,
     output wire [31:0] Zhigh,
     output wire [31:0] Zlow,
+
+    // Arithmetic status flags from the datapath
+    output wire        addsub_overflow,
+    output wire        neg_overflow,
+    output wire        mul_overflow,
+    output wire        div_by_zero,
+    output wire        inc_overflow,
 
     output wire [31:0] R0,
     output wire [31:0] R1,
@@ -85,16 +84,13 @@ module Datapath_top (
     output wire [31:0] R15
 );
 
-    // -----------------------------------------
-    // Encode "out" control signals into BusSel
-    // -----------------------------------------
+    // Encode which source is currently driving the bus into BusSel
     reg [4:0] BusSel;
 
     always @(*) begin
-        BusSel = 5'd0; // default (R0)
+        BusSel = 5'd0; // default to R0 when nothing else is selected
 
-        // Priority encoder: expects ONE source asserted at a time.
-        // GPR outs
+        // Simple priority encoder; only one source should be high at a time
         if      (Rout[0])  BusSel = 5'd0;
         else if (Rout[1])  BusSel = 5'd1;
         else if (Rout[2])  BusSel = 5'd2;
@@ -112,7 +108,6 @@ module Datapath_top (
         else if (Rout[14]) BusSel = 5'd14;
         else if (Rout[15]) BusSel = 5'd15;
 
-        // Special outs
         else if (HIout)     BusSel = 5'd16;
         else if (LOout)     BusSel = 5'd17;
         else if (Zhighout)  BusSel = 5'd18;
@@ -120,13 +115,9 @@ module Datapath_top (
         else if (PCout)     BusSel = 5'd20;
         else if (MDRout)    BusSel = 5'd21;
 
-        // else if (InPortout) BusSel = 5'd22; // later
-        // else if (Cout)      BusSel = 5'd23; // later
     end
 
-    // -----------------------------------------
-    // Instantiate your existing Datapath core
-    // -----------------------------------------
+    // Hook up the core datapath
     Datapath U_DP (
         .Clock(Clock),
         .Clear(Clear),
@@ -177,7 +168,13 @@ module Datapath_top (
         .R0(R0), .R1(R1), .R2(R2), .R3(R3),
         .R4(R4), .R5(R5), .R6(R6), .R7(R7),
         .R8(R8), .R9(R9), .R10(R10), .R11(R11),
-        .R12(R12), .R13(R13), .R14(R14), .R15(R15)
+        .R12(R12), .R13(R13), .R14(R14), .R15(R15),
+
+        .addsub_overflow(addsub_overflow),
+        .neg_overflow(neg_overflow),
+        .mul_overflow(mul_overflow),
+        .div_by_zero(div_by_zero),
+        .inc_overflow(inc_overflow)
     );
 
 endmodule

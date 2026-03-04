@@ -1,4 +1,4 @@
-// SHRA instruction testbench: shra R7, R0, R4 (same as SHR, SHRA in T4)
+// Testbench for shra R7, R0, R4. Same structure as SHR, but using the arithmetic shift‑right control in T4.
 `timescale 1ns/10ps
 module tb_shra;
     reg Clock, Clear;

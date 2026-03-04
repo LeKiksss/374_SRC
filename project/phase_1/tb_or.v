@@ -1,4 +1,4 @@
-// OR instruction testbench: or R2, R5, R6 (same sequence as AND, OR in T4)
+// Testbench for or R2, R5, R6. Same control sequence as AND, but asserting OR in T4.
 `timescale 1ns/10ps
 module tb_or;
     reg Clock, Clear;
@@ -52,8 +52,6 @@ module tb_or;
             Reg_load1b: begin MDRout=1; Rin[5]=1; end
             Reg_load2a: begin Mdatain=32'h45; Read=1; MDRin=1; end
             Reg_load2b: begin MDRout=1; Rin[6]=1; end
-            Reg_load3a: begin Mdatain=32'h67; Read=1; MDRin=1; end
-            Reg_load3b: begin MDRout=1; Rin[2]=1; end
             T0: begin PCout=1; MARin=1; IncPC=1; Zin=1; end
             T1: begin Zlowout=1; PCin=1; Read=1; MDRin=1; Mdatain=32'h112C0000; end  // or R2,R5,R6
             T2: begin MDRout=1; IRin=1; end

@@ -12,10 +12,10 @@ module Datapath (
     input  wire        LOin,
     input  wire        Zin,
 
-    // 32:1 bus select
+    // Encoded select for the shared 32‑bit bus
     input  wire [4:0]  BusSel,
 
-    // ALU Control Signals (logic ops for now)
+    // ALU operation selects
     input  wire        AND,
     input  wire        OR,
     input  wire        NOT_op,
@@ -31,15 +31,15 @@ module Datapath (
 	 input  wire		  DIV,
 
 
-    // PC increment (T0: Z <- PC+1)
+    // Increment PC by one when asserted
     input  wire        IncPC,
 
-    // MDR
+    // Memory data register interface
     input  wire        MDRin,
     input  wire        Read,
     input  wire [31:0] Mdatain,
 
-    // outputs
+    // Top‑level datapath visibility
     output wire [31:0] BusMuxOut,
 
     output wire [31:0] PC,
@@ -52,6 +52,13 @@ module Datapath (
 
     output wire [31:0] Zlow,
     output wire [31:0] Zhigh,
+
+    // Edge‑case flags exported from ALU and incrementer
+    output wire        addsub_overflow,
+    output wire        neg_overflow,
+    output wire        mul_overflow,
+    output wire        div_by_zero,
+    output wire        inc_overflow,   // PC+1 wrapped
 
     output wire [31:0] R0,
     output wire [31:0] R1,
@@ -71,9 +78,7 @@ module Datapath (
     output wire [31:0] R15
 );
 
-    // ----------------------------
-    // 1) General Purpose Registers
-    // ----------------------------
+    // General‑purpose register file R0–R15
     wire [31:0] R [0:15];
 
     genvar i;
@@ -106,9 +111,7 @@ module Datapath (
     assign R14 = R[14];
     assign R15 = R[15];
 
-    // ----------------------------
-    // 2) Special 32-bit Registers
-    // ----------------------------
+    // Other 32‑bit architectural registers
     register PC_reg  (.clear(Clear), .clock(Clock), .enable(PCin),  .BusMuxOut(BusMuxOut), .BusMuxIn(PC));
     register IR_reg  (.clear(Clear), .clock(Clock), .enable(IRin),  .BusMuxOut(BusMuxOut), .BusMuxIn(IR));
     register Y_reg   (.clear(Clear), .clock(Clock), .enable(Yin),   .BusMuxOut(BusMuxOut), .BusMuxIn(Y));
@@ -116,9 +119,7 @@ module Datapath (
     register HI_reg  (.clear(Clear), .clock(Clock), .enable(HIin),  .BusMuxOut(BusMuxOut), .BusMuxIn(HI));
     register LO_reg  (.clear(Clear), .clock(Clock), .enable(LOin),  .BusMuxOut(BusMuxOut), .BusMuxIn(LO));
 
-    // ----------------------------
-    // 3) MDR (special register with 2 input sources)
-    // ----------------------------
+    // MDR can load from memory or from the bus
     wire [31:0] MDR_data;
 
     MDR MDR_reg (
@@ -131,13 +132,15 @@ module Datapath (
         .MDRout(MDR_data)
     );
 
-    // ----------------------------
-    // 4) Core wiring: Y -> ALU (logic) -> Z
-    // ----------------------------
-    wire [31:0] A = Y;         // ALU A operand comes from Y
-    wire [31:0] B = BusMuxOut; // ALU B operand comes from the bus
+    // Core ALU wiring: Y and the bus feed the ALU, which then feeds Z
+    wire [31:0] A = Y;         // ALU A input
+    wire [31:0] B = BusMuxOut; // ALU B input
 
     wire [63:0] logic_out;
+    wire        addsub_ovf_int;
+    wire        neg_ovf_int;
+    wire        mul_ovf_int;
+    wire        div_zero_int;
 
     alu_core U_LOGIC (
         .AND(AND),
@@ -158,17 +161,24 @@ module Datapath (
 		  
         .A(A),
         .B(B),
-        .out(logic_out)
+        .out(logic_out),
+
+        .addsub_overflow(addsub_ovf_int),
+        .neg_overflow(neg_ovf_int),
+        .mul_overflow(mul_ovf_int),
+        .div_by_zero(div_zero_int)
     );
 
-    // Z input: when IncPC, Z loads PC+1 (bus holds PC); else ALU output
+    // Z loads either PC+1 or the current ALU result
     wire [31:0] inc_out;
     inc32 U_INC (.in(BusMuxOut), .out(inc_out));
+
+    // Detect wrap‑around when incrementing 0xFFFF_FFFF
+    assign inc_overflow = IncPC && (BusMuxOut == 32'hFFFF_FFFF);
+
     wire [63:0] Z_in_internal = IncPC ? {32'b0, inc_out} : logic_out;
 
-    // ----------------------------
-    // 5) Z Register (64-bit)
-    // ----------------------------
+    // 64‑bit Z register holds ALU or PC+1 result
     register #(.DATA_WIDTH_IN(64), .DATA_WIDTH_OUT(64)) Z_reg (
         .clear(Clear),
         .clock(Clock),
@@ -180,9 +190,13 @@ module Datapath (
     assign Zlow  = Z[31:0];
     assign Zhigh = Z[63:32];
 
-    // ----------------------------
-    // 6) Bus Mux (sources -> BusMuxOut)
-    // ----------------------------
+    // Drive ALU edge‑case flags to module outputs
+    assign addsub_overflow = addsub_ovf_int;
+    assign neg_overflow    = neg_ovf_int;
+    assign mul_overflow    = mul_ovf_int;
+    assign div_by_zero     = div_zero_int;
+
+    // 32‑to‑1 bus multiplexer that chooses the current bus source
     wire [31:0] InPort = 32'b0;
     wire [31:0] C_se   = 32'b0;
 
