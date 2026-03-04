@@ -97,7 +97,6 @@ set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_RO
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_global_assignment -name VERILOG_FILE tb_and.v
 set_global_assignment -name VERILOG_FILE general_purpose_register.v
-set_global_assignment -name VERILOG_FILE testbench.v
 set_global_assignment -name VERILOG_FILE datapath.v
 set_global_assignment -name VERILOG_FILE inc32.v
 set_global_assignment -name VERILOG_FILE mdr.v
