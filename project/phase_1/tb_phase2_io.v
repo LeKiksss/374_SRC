@@ -121,7 +121,7 @@ module tb_phase2_io;
                 init_memory_defaults();
                 DUT.U_DP.U_RAM.memory[9'h000] = encode_ra(OP_OUT, 4'd7);
                 DUT.U_DP.PC_reg.q = 32'h0000_0000;
-                DUT.U_DP.GPR[7].Rn.q = 32'hCAFE_BABE;
+                DUT.U_DP.GPR[7].Rn.q = 32'h4D2A_91F0;
                 Present_state = S_T0_1;
             end
             S_T0_1: begin show_state("T0"); Present_state = S_T1_1; end
@@ -129,7 +129,7 @@ module tb_phase2_io;
             S_T2_1: begin show_state("T2"); Present_state = S_T3_1; end
             S_T3_1: begin
                 show_state("T3");
-                expect32("out R7", Out_Port, 32'hCAFE_BABE);
+                expect32("out R7", Out_Port, 32'h4D2A_91F0);
                 Present_state = S_CLEAR_2;
             end
 

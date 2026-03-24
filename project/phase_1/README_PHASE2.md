@@ -437,7 +437,7 @@ What you should see for `jal`:
 
 - `R4` is the jump target
 - `R12` is used as the return address register in this bench
-- after fetch from address `0x20`, the PC becomes `0x21`
+- after fetch from address `0x10`, the PC becomes `0x11`
 - `T3` writes that return address into `R12`
 - `T4` jumps to the address in `R4`
 
@@ -445,15 +445,15 @@ Example behavior:
 
 - `jr R12` should end with `PC = 000000FF`
 - `jal R4` should show:
-  - `R12 = 00000021`
-  - `PC = 000000A5`
+  - `R12 = 00000011`
+  - `PC = 000000FF`
 
 Typical pass lines:
 
 ```text
 PASS: jr R12 = 000000ff
-PASS: jal link register = 00000021
-PASS: jal jump target = 000000a5
+PASS: jal link register = 00000011
+PASS: jal jump target = 000000ff
 PASS: GROUP 4 completed with no failures
 ```
 

@@ -142,9 +142,9 @@ module tb_phase2_jump;
             S_CLEAR_2: begin
                 show_state("CLEAR");
                 init_memory_defaults();
-                DUT.U_DP.U_RAM.memory[9'h020] = encode_jal(OP_JAL, 4'd4, 4'd12);
-                DUT.U_DP.PC_reg.q = 32'h0000_0020;
-                DUT.U_DP.GPR[4].Rn.q = 32'h0000_00A5;
+                DUT.U_DP.U_RAM.memory[9'h010] = encode_jal(OP_JAL, 4'd4, 4'd12);
+                DUT.U_DP.PC_reg.q = 32'h0000_0010;
+                DUT.U_DP.GPR[4].Rn.q = 32'h0000_00FF;
                 DUT.U_DP.GPR[12].Rn.q = 32'h0000_0000;
                 Present_state = S_T0_2;
             end
@@ -153,12 +153,12 @@ module tb_phase2_jump;
             S_T2_2: begin show_state("T2"); Present_state = S_T3_2; end
             S_T3_2: begin
                 show_state("T3");
-                expect32("jal link register", R12, 32'h0000_0021);
+                expect32("jal link register", R12, 32'h0000_0011);
                 Present_state = S_T4_2;
             end
             S_T4_2: begin
                 show_state("T4");
-                expect32("jal jump target", PC, 32'h0000_00A5);
+                expect32("jal jump target", PC, 32'h0000_00FF);
                 if (failures == 0) begin
                     $display("PASS: GROUP 4 completed with no failures");
                 end else begin
