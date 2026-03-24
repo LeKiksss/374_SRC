@@ -2,10 +2,15 @@ module Datapath_top (
     input  wire        Clock,
     input  wire        Clear,
 
-    // One‑hot write enables for the sixteen general‑purpose registers
-    input  wire [15:0] Rin,
+    // Select and Encode controls
+    input  wire        Gra,
+    input  wire        Grb,
+    input  wire        Grc,
+    input  wire        Rin,
+    input  wire        Rout,
+    input  wire        BAout,
 
-    // Write enables for the other architectural registers
+    // Write enables for architectural registers
     input  wire        PCin,
     input  wire        IRin,
     input  wire        Yin,
@@ -13,24 +18,24 @@ module Datapath_top (
     input  wire        HIin,
     input  wire        LOin,
     input  wire        Zin,
-
-    // Request to load PC+1 into Z
-    input  wire        IncPC,
-
-    // Control and data for the MDR
     input  wire        MDRin,
-    input  wire        Read,
-    input  wire [31:0] Mdatain,
+    input  wire        CONin,
+    input  wire        Out_Portin,
 
-    // One‑hot sources that are allowed to drive the shared bus
-    input  wire [15:0] Rout,      // R0out..R15out one-hot
+    // Memory and PC increment controls
+    input  wire        IncPC,
+    input  wire        Read,
+    input  wire        Write,
+
+    // Shared bus source controls
     input  wire        PCout,
     input  wire        MDRout,
     input  wire        HIout,
     input  wire        LOout,
     input  wire        Zhighout,
     input  wire        Zlowout,
-    // (later) input wire InPortout, Cout, etc.
+    input  wire        In_Portout,
+    input  wire        Cout,
 
     // ALU operation control signals
     input  wire        AND,
@@ -47,17 +52,25 @@ module Datapath_top (
     input  wire        MUL,
     input  wire        DIV,
 
+    // External input port
+    input  wire [31:0] port_in,
+
     // Datapath visibility for simulation and debugging
     output wire [31:0] BusMuxOut,
     output wire [31:0] PC,
     output wire [31:0] IR,
     output wire [31:0] Y,
     output wire [31:0] MAR,
+    output wire [31:0] MDR,
     output wire [31:0] HI,
     output wire [31:0] LO,
     output wire [63:0] Z,
     output wire [31:0] Zhigh,
     output wire [31:0] Zlow,
+    output wire [31:0] In_Port,
+    output wire [31:0] Out_Port,
+    output wire [31:0] MemoryData,
+    output wire        CON,
 
     // Arithmetic status flags from the datapath
     output wire        addsub_overflow,
@@ -84,46 +97,67 @@ module Datapath_top (
     output wire [31:0] R15
 );
 
-    // Encode which source is currently driving the bus into BusSel
-    reg [4:0] BusSel;
+    localparam [4:0] BUS_R0      = 5'd0;
+    localparam [4:0] BUS_R15     = 5'd15;
+    localparam [4:0] BUS_HI      = 5'd16;
+    localparam [4:0] BUS_LO      = 5'd17;
+    localparam [4:0] BUS_ZHIGH   = 5'd18;
+    localparam [4:0] BUS_ZLOW    = 5'd19;
+    localparam [4:0] BUS_PC      = 5'd20;
+    localparam [4:0] BUS_MDR     = 5'd21;
+    localparam [4:0] BUS_IN_PORT = 5'd22;
+    localparam [4:0] BUS_COUT    = 5'd23;
+
+    wire [15:0] GPRin;
+    wire [15:0] GPRout;
+    reg  [4:0]  BusSel;
+
+    select_encode U_SELECT_ENCODE (
+        .IR(IR),
+        .Gra(Gra),
+        .Grb(Grb),
+        .Grc(Grc),
+        .Rin(Rin),
+        .Rout(Rout),
+        .BAout(BAout),
+        .GPRin(GPRin),
+        .GPRout(GPRout)
+    );
 
     always @(*) begin
-        BusSel = 5'd0; // default to R0 when nothing else is selected
+        BusSel = BUS_R0;
 
-        // Simple priority encoder; only one source should be high at a time
-        if      (Rout[0])  BusSel = 5'd0;
-        else if (Rout[1])  BusSel = 5'd1;
-        else if (Rout[2])  BusSel = 5'd2;
-        else if (Rout[3])  BusSel = 5'd3;
-        else if (Rout[4])  BusSel = 5'd4;
-        else if (Rout[5])  BusSel = 5'd5;
-        else if (Rout[6])  BusSel = 5'd6;
-        else if (Rout[7])  BusSel = 5'd7;
-        else if (Rout[8])  BusSel = 5'd8;
-        else if (Rout[9])  BusSel = 5'd9;
-        else if (Rout[10]) BusSel = 5'd10;
-        else if (Rout[11]) BusSel = 5'd11;
-        else if (Rout[12]) BusSel = 5'd12;
-        else if (Rout[13]) BusSel = 5'd13;
-        else if (Rout[14]) BusSel = 5'd14;
-        else if (Rout[15]) BusSel = 5'd15;
-
-        else if (HIout)     BusSel = 5'd16;
-        else if (LOout)     BusSel = 5'd17;
-        else if (Zhighout)  BusSel = 5'd18;
-        else if (Zlowout)   BusSel = 5'd19;
-        else if (PCout)     BusSel = 5'd20;
-        else if (MDRout)    BusSel = 5'd21;
-
+        if      (GPRout[0])  BusSel = 5'd0;
+        else if (GPRout[1])  BusSel = 5'd1;
+        else if (GPRout[2])  BusSel = 5'd2;
+        else if (GPRout[3])  BusSel = 5'd3;
+        else if (GPRout[4])  BusSel = 5'd4;
+        else if (GPRout[5])  BusSel = 5'd5;
+        else if (GPRout[6])  BusSel = 5'd6;
+        else if (GPRout[7])  BusSel = 5'd7;
+        else if (GPRout[8])  BusSel = 5'd8;
+        else if (GPRout[9])  BusSel = 5'd9;
+        else if (GPRout[10]) BusSel = 5'd10;
+        else if (GPRout[11]) BusSel = 5'd11;
+        else if (GPRout[12]) BusSel = 5'd12;
+        else if (GPRout[13]) BusSel = 5'd13;
+        else if (GPRout[14]) BusSel = 5'd14;
+        else if (GPRout[15]) BusSel = BUS_R15;
+        else if (HIout)      BusSel = BUS_HI;
+        else if (LOout)      BusSel = BUS_LO;
+        else if (Zhighout)   BusSel = BUS_ZHIGH;
+        else if (Zlowout)    BusSel = BUS_ZLOW;
+        else if (PCout)      BusSel = BUS_PC;
+        else if (MDRout)     BusSel = BUS_MDR;
+        else if (In_Portout) BusSel = BUS_IN_PORT;
+        else if (Cout)       BusSel = BUS_COUT;
     end
 
-    // Hook up the core datapath
     Datapath U_DP (
         .Clock(Clock),
         .Clear(Clear),
-
-        .Rin(Rin),
-
+        .Rin(GPRin),
+        .BAout(BAout),
         .PCin(PCin),
         .IRin(IRin),
         .Yin(Yin),
@@ -131,10 +165,10 @@ module Datapath_top (
         .HIin(HIin),
         .LOin(LOin),
         .Zin(Zin),
-        .IncPC(IncPC),
-
+        .MDRin(MDRin),
+        .CONin(CONin),
+        .Out_Portin(Out_Portin),
         .BusSel(BusSel),
-
         .AND(AND),
         .OR(OR),
         .NOT_op(NOT_op),
@@ -148,28 +182,29 @@ module Datapath_top (
         .SUB(SUB),
         .MUL(MUL),
         .DIV(DIV),
-
-        .MDRin(MDRin),
+        .IncPC(IncPC),
         .Read(Read),
-        .Mdatain(Mdatain),
-
+        .Write(Write),
+        .port_in(port_in),
         .BusMuxOut(BusMuxOut),
-
         .PC(PC),
         .IR(IR),
         .Y(Y),
         .MAR(MAR),
+        .MDR(MDR),
         .HI(HI),
         .LO(LO),
         .Z(Z),
         .Zlow(Zlow),
         .Zhigh(Zhigh),
-
+        .In_Port(In_Port),
+        .Out_Port(Out_Port),
+        .MemoryData(MemoryData),
+        .CON(CON),
         .R0(R0), .R1(R1), .R2(R2), .R3(R3),
         .R4(R4), .R5(R5), .R6(R6), .R7(R7),
         .R8(R8), .R9(R9), .R10(R10), .R11(R11),
         .R12(R12), .R13(R13), .R14(R14), .R15(R15),
-
         .addsub_overflow(addsub_overflow),
         .neg_overflow(neg_overflow),
         .mul_overflow(mul_overflow),
