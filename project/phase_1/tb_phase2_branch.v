@@ -18,12 +18,11 @@ module tb_phase2_branch;
 
     reg  [6:0]  Present_state;
     reg         Clock, Clear;
-    reg         Gra, Grb, Grc, Rin, Rout, BAout;
-    reg         PCin, IRin, Yin, MARin, HIin, LOin, Zin, MDRin, CONin, Out_Portin;
-    reg         IncPC, Read, Write;
-    reg         PCout, MDRout, HIout, LOout, Zhighout, Zlowout, In_Portout, Cout;
-    reg         AND, OR, NOT_op, NEG, SHR, SHRA, SHL, ROR, ROL, ADD, SUB, MUL, DIV;
-    reg [31:0]  port_in;
+    reg         Gra, Rout;
+    reg         PCin, IRin, Yin, MARin, Zin, MDRin, CONin;
+    reg         IncPC, Read;
+    reg         PCout, MDRout, Zlowout, Cout;
+    reg         ADD;
 
     wire [31:0] BusMuxOut, PC, IR, Y, MAR, MDR, HI, LO, Zhigh, Zlow, In_Port, Out_Port, MemoryData;
     wire [63:0] Z;
@@ -34,13 +33,13 @@ module tb_phase2_branch;
     integer failures;
 
     Datapath_top DUT (
-        .Clock(Clock), .Clear(Clear), .Gra(Gra), .Grb(Grb), .Grc(Grc), .Rin(Rin), .Rout(Rout), .BAout(BAout),
-        .PCin(PCin), .IRin(IRin), .Yin(Yin), .MARin(MARin), .HIin(HIin), .LOin(LOin), .Zin(Zin), .MDRin(MDRin),
-        .CONin(CONin), .Out_Portin(Out_Portin), .IncPC(IncPC), .Read(Read), .Write(Write), .PCout(PCout),
-        .MDRout(MDRout), .HIout(HIout), .LOout(LOout), .Zhighout(Zhighout), .Zlowout(Zlowout),
-        .In_Portout(In_Portout), .Cout(Cout), .AND(AND), .OR(OR), .NOT_op(NOT_op), .NEG(NEG), .SHR(SHR),
-        .SHRA(SHRA), .SHL(SHL), .ROR(ROR), .ROL(ROL), .ADD(ADD), .SUB(SUB), .MUL(MUL), .DIV(DIV),
-        .port_in(port_in), .BusMuxOut(BusMuxOut), .PC(PC), .IR(IR), .Y(Y), .MAR(MAR), .MDR(MDR), .HI(HI), .LO(LO),
+        .Clock(Clock), .Clear(Clear), .Gra(Gra), .Grb(1'b0), .Grc(1'b0), .Rin(1'b0), .Rout(Rout), .BAout(1'b0),
+        .PCin(PCin), .IRin(IRin), .Yin(Yin), .MARin(MARin), .HIin(1'b0), .LOin(1'b0), .Zin(Zin), .MDRin(MDRin),
+        .CONin(CONin), .Out_Portin(1'b0), .IncPC(IncPC), .Read(Read), .Write(1'b0), .PCout(PCout),
+        .MDRout(MDRout), .HIout(1'b0), .LOout(1'b0), .Zhighout(1'b0), .Zlowout(Zlowout),
+        .In_Portout(1'b0), .Cout(Cout), .AND(1'b0), .OR(1'b0), .NOT_op(1'b0), .NEG(1'b0), .SHR(1'b0),
+        .SHRA(1'b0), .SHL(1'b0), .ROR(1'b0), .ROL(1'b0), .ADD(ADD), .SUB(1'b0), .MUL(1'b0), .DIV(1'b0),
+        .port_in(32'h0000_0000), .BusMuxOut(BusMuxOut), .PC(PC), .IR(IR), .Y(Y), .MAR(MAR), .MDR(MDR), .HI(HI), .LO(LO),
         .Z(Z), .Zhigh(Zhigh), .Zlow(Zlow), .In_Port(In_Port), .Out_Port(Out_Port), .MemoryData(MemoryData),
         .CON(CON), .addsub_overflow(addsub_overflow), .neg_overflow(neg_overflow), .mul_overflow(mul_overflow),
         .div_by_zero(div_by_zero), .inc_overflow(inc_overflow), .R0(R0), .R1(R1), .R2(R2), .R3(R3), .R4(R4),
@@ -59,14 +58,6 @@ module tb_phase2_branch;
         end
     endfunction
 
-    task show_state;
-        input [LABEL_W-1:0] label;
-        begin
-            $display("[%0t] %s BUS=%h PC=%h IR=%h R3=%h Y=%h Zlow=%h CON=%b",
-                $time, label, BusMuxOut, PC, IR, R3, Y, Zlow, CON);
-        end
-    endtask
-
     task expect32;
         input [LABEL_W-1:0] label;
         input [31:0] actual;
@@ -75,8 +66,6 @@ module tb_phase2_branch;
             if (actual !== expected) begin
                 failures = failures + 1;
                 $display("FAIL: %s expected=%h actual=%h", label, expected, actual);
-            end else begin
-                $display("PASS: %s = %h", label, actual);
             end
         end
     endtask
@@ -88,8 +77,6 @@ module tb_phase2_branch;
             if (CON !== expected) begin
                 failures = failures + 1;
                 $display("FAIL: %s CON expected=%b actual=%b", label, expected, CON);
-            end else begin
-                $display("PASS: %s CON = %b", label, CON);
             end
         end
     endtask
@@ -112,12 +99,11 @@ module tb_phase2_branch;
 
     always @(*) begin
         Clear = 0;
-        Gra = 0; Grb = 0; Grc = 0; Rin = 0; Rout = 0; BAout = 0;
-        PCin = 0; IRin = 0; Yin = 0; MARin = 0; HIin = 0; LOin = 0; Zin = 0; MDRin = 0; CONin = 0; Out_Portin = 0;
-        IncPC = 0; Read = 0; Write = 0;
-        PCout = 0; MDRout = 0; HIout = 0; LOout = 0; Zhighout = 0; Zlowout = 0; In_Portout = 0; Cout = 0;
-        AND = 0; OR = 0; NOT_op = 0; NEG = 0; SHR = 0; SHRA = 0; SHL = 0; ROR = 0; ROL = 0; ADD = 0; SUB = 0; MUL = 0; DIV = 0;
-        port_in = 32'h0000_0000;
+        Gra = 0; Rout = 0;
+        PCin = 0; IRin = 0; Yin = 0; MARin = 0; Zin = 0; MDRin = 0; CONin = 0;
+        IncPC = 0; Read = 0;
+        PCout = 0; MDRout = 0; Zlowout = 0; Cout = 0;
+        ADD = 0;
 
         case (Present_state)
             S_CLEAR_1, S_CLEAR_2, S_CLEAR_3, S_CLEAR_4, S_CLEAR_5, S_CLEAR_6, S_CLEAR_7, S_CLEAR_8: Clear = 1;
@@ -135,85 +121,83 @@ module tb_phase2_branch;
     always @(posedge Clock) begin
         #1;
         case (Present_state)
-            S_CLEAR_1: begin show_state("CLEAR"); init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b00, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0000; Present_state = S_T0_1; end
-            S_T0_1: begin show_state("T0"); Present_state = S_T1_1; end
-            S_T1_1: begin show_state("T1"); Present_state = S_T2_1; end
-            S_T2_1: begin show_state("T2"); Present_state = S_T3_1; end
-            S_T3_1: begin show_state("T3"); expect_con("brzr taken", 1'b1); Present_state = S_T4_1; end
-            S_T4_1: begin show_state("T4"); Present_state = S_T5_1; end
-            S_T5_1: begin show_state("T5"); Present_state = S_T6_1; end
-            S_T6_1: begin show_state("T6"); expect32("brzr taken", PC, 32'h0000_0041); Present_state = S_CLEAR_2; end
+            S_CLEAR_1: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b00, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0000; Present_state = S_T0_1; end
+            S_T0_1: Present_state = S_T1_1;
+            S_T1_1: Present_state = S_T2_1;
+            S_T2_1: Present_state = S_T3_1;
+            S_T3_1: begin expect_con("brzr taken", 1'b1); Present_state = S_T4_1; end
+            S_T4_1: Present_state = S_T5_1;
+            S_T5_1: Present_state = S_T6_1;
+            S_T6_1: begin expect32("brzr taken", PC, 32'h0000_0041); Present_state = S_CLEAR_2; end
 
-            S_CLEAR_2: begin show_state("CLEAR"); init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b00, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0005; Present_state = S_T0_2; end
-            S_T0_2: begin show_state("T0"); Present_state = S_T1_2; end
-            S_T1_2: begin show_state("T1"); Present_state = S_T2_2; end
-            S_T2_2: begin show_state("T2"); Present_state = S_T3_2; end
-            S_T3_2: begin show_state("T3"); expect_con("brzr not taken", 1'b0); Present_state = S_T4_2; end
-            S_T4_2: begin show_state("T4"); Present_state = S_T5_2; end
-            S_T5_2: begin show_state("T5"); Present_state = S_T6_2; end
-            S_T6_2: begin show_state("T6"); expect32("brzr not taken", PC, 32'h0000_0011); Present_state = S_CLEAR_3; end
+            S_CLEAR_2: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b00, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0005; Present_state = S_T0_2; end
+            S_T0_2: Present_state = S_T1_2;
+            S_T1_2: Present_state = S_T2_2;
+            S_T2_2: Present_state = S_T3_2;
+            S_T3_2: begin expect_con("brzr not taken", 1'b0); Present_state = S_T4_2; end
+            S_T4_2: Present_state = S_T5_2;
+            S_T5_2: Present_state = S_T6_2;
+            S_T6_2: begin expect32("brzr not taken", PC, 32'h0000_0011); Present_state = S_CLEAR_3; end
 
-            S_CLEAR_3: begin show_state("CLEAR"); init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b01, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0005; Present_state = S_T0_3; end
-            S_T0_3: begin show_state("T0"); Present_state = S_T1_3; end
-            S_T1_3: begin show_state("T1"); Present_state = S_T2_3; end
-            S_T2_3: begin show_state("T2"); Present_state = S_T3_3; end
-            S_T3_3: begin show_state("T3"); expect_con("brnz taken", 1'b1); Present_state = S_T4_3; end
-            S_T4_3: begin show_state("T4"); Present_state = S_T5_3; end
-            S_T5_3: begin show_state("T5"); Present_state = S_T6_3; end
-            S_T6_3: begin show_state("T6"); expect32("brnz taken", PC, 32'h0000_0041); Present_state = S_CLEAR_4; end
+            S_CLEAR_3: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b01, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0005; Present_state = S_T0_3; end
+            S_T0_3: Present_state = S_T1_3;
+            S_T1_3: Present_state = S_T2_3;
+            S_T2_3: Present_state = S_T3_3;
+            S_T3_3: begin expect_con("brnz taken", 1'b1); Present_state = S_T4_3; end
+            S_T4_3: Present_state = S_T5_3;
+            S_T5_3: Present_state = S_T6_3;
+            S_T6_3: begin expect32("brnz taken", PC, 32'h0000_0041); Present_state = S_CLEAR_4; end
 
-            S_CLEAR_4: begin show_state("CLEAR"); init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b01, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0000; Present_state = S_T0_4; end
-            S_T0_4: begin show_state("T0"); Present_state = S_T1_4; end
-            S_T1_4: begin show_state("T1"); Present_state = S_T2_4; end
-            S_T2_4: begin show_state("T2"); Present_state = S_T3_4; end
-            S_T3_4: begin show_state("T3"); expect_con("brnz not taken", 1'b0); Present_state = S_T4_4; end
-            S_T4_4: begin show_state("T4"); Present_state = S_T5_4; end
-            S_T5_4: begin show_state("T5"); Present_state = S_T6_4; end
-            S_T6_4: begin show_state("T6"); expect32("brnz not taken", PC, 32'h0000_0011); Present_state = S_CLEAR_5; end
+            S_CLEAR_4: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b01, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0000; Present_state = S_T0_4; end
+            S_T0_4: Present_state = S_T1_4;
+            S_T1_4: Present_state = S_T2_4;
+            S_T2_4: Present_state = S_T3_4;
+            S_T3_4: begin expect_con("brnz not taken", 1'b0); Present_state = S_T4_4; end
+            S_T4_4: Present_state = S_T5_4;
+            S_T5_4: Present_state = S_T6_4;
+            S_T6_4: begin expect32("brnz not taken", PC, 32'h0000_0011); Present_state = S_CLEAR_5; end
 
-            S_CLEAR_5: begin show_state("CLEAR"); init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b10, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0007; Present_state = S_T0_5; end
-            S_T0_5: begin show_state("T0"); Present_state = S_T1_5; end
-            S_T1_5: begin show_state("T1"); Present_state = S_T2_5; end
-            S_T2_5: begin show_state("T2"); Present_state = S_T3_5; end
-            S_T3_5: begin show_state("T3"); expect_con("brpl taken", 1'b1); Present_state = S_T4_5; end
-            S_T4_5: begin show_state("T4"); Present_state = S_T5_5; end
-            S_T5_5: begin show_state("T5"); Present_state = S_T6_5; end
-            S_T6_5: begin show_state("T6"); expect32("brpl taken", PC, 32'h0000_0041); Present_state = S_CLEAR_6; end
+            S_CLEAR_5: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b10, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0007; Present_state = S_T0_5; end
+            S_T0_5: Present_state = S_T1_5;
+            S_T1_5: Present_state = S_T2_5;
+            S_T2_5: Present_state = S_T3_5;
+            S_T3_5: begin expect_con("brpl taken", 1'b1); Present_state = S_T4_5; end
+            S_T4_5: Present_state = S_T5_5;
+            S_T5_5: Present_state = S_T6_5;
+            S_T6_5: begin expect32("brpl taken", PC, 32'h0000_0041); Present_state = S_CLEAR_6; end
 
-            S_CLEAR_6: begin show_state("CLEAR"); init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b10, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'hFFFF_FFF0; Present_state = S_T0_6; end
-            S_T0_6: begin show_state("T0"); Present_state = S_T1_6; end
-            S_T1_6: begin show_state("T1"); Present_state = S_T2_6; end
-            S_T2_6: begin show_state("T2"); Present_state = S_T3_6; end
-            S_T3_6: begin show_state("T3"); expect_con("brpl not taken", 1'b0); Present_state = S_T4_6; end
-            S_T4_6: begin show_state("T4"); Present_state = S_T5_6; end
-            S_T5_6: begin show_state("T5"); Present_state = S_T6_6; end
-            S_T6_6: begin show_state("T6"); expect32("brpl not taken", PC, 32'h0000_0011); Present_state = S_CLEAR_7; end
+            S_CLEAR_6: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b10, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'hFFFF_FFF0; Present_state = S_T0_6; end
+            S_T0_6: Present_state = S_T1_6;
+            S_T1_6: Present_state = S_T2_6;
+            S_T2_6: Present_state = S_T3_6;
+            S_T3_6: begin expect_con("brpl not taken", 1'b0); Present_state = S_T4_6; end
+            S_T4_6: Present_state = S_T5_6;
+            S_T5_6: Present_state = S_T6_6;
+            S_T6_6: begin expect32("brpl not taken", PC, 32'h0000_0011); Present_state = S_CLEAR_7; end
 
-            S_CLEAR_7: begin show_state("CLEAR"); init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b11, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'hFFFF_FFF0; Present_state = S_T0_7; end
-            S_T0_7: begin show_state("T0"); Present_state = S_T1_7; end
-            S_T1_7: begin show_state("T1"); Present_state = S_T2_7; end
-            S_T2_7: begin show_state("T2"); Present_state = S_T3_7; end
-            S_T3_7: begin show_state("T3"); expect_con("brmi taken", 1'b1); Present_state = S_T4_7; end
-            S_T4_7: begin show_state("T4"); Present_state = S_T5_7; end
-            S_T5_7: begin show_state("T5"); Present_state = S_T6_7; end
-            S_T6_7: begin show_state("T6"); expect32("brmi taken", PC, 32'h0000_0041); Present_state = S_CLEAR_8; end
+            S_CLEAR_7: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b11, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'hFFFF_FFF0; Present_state = S_T0_7; end
+            S_T0_7: Present_state = S_T1_7;
+            S_T1_7: Present_state = S_T2_7;
+            S_T2_7: Present_state = S_T3_7;
+            S_T3_7: begin expect_con("brmi taken", 1'b1); Present_state = S_T4_7; end
+            S_T4_7: Present_state = S_T5_7;
+            S_T5_7: Present_state = S_T6_7;
+            S_T6_7: begin expect32("brmi taken", PC, 32'h0000_0041); Present_state = S_CLEAR_8; end
 
-            S_CLEAR_8: begin show_state("CLEAR"); init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b11, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0000; Present_state = S_T0_8; end
-            S_T0_8: begin show_state("T0"); Present_state = S_T1_8; end
-            S_T1_8: begin show_state("T1"); Present_state = S_T2_8; end
-            S_T2_8: begin show_state("T2"); Present_state = S_T3_8; end
-            S_T3_8: begin show_state("T3"); expect_con("brmi not taken", 1'b0); Present_state = S_T4_8; end
-            S_T4_8: begin show_state("T4"); Present_state = S_T5_8; end
-            S_T5_8: begin show_state("T5"); Present_state = S_T6_8; end
+            S_CLEAR_8: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b11, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0000; Present_state = S_T0_8; end
+            S_T0_8: Present_state = S_T1_8;
+            S_T1_8: Present_state = S_T2_8;
+            S_T2_8: Present_state = S_T3_8;
+            S_T3_8: begin expect_con("brmi not taken", 1'b0); Present_state = S_T4_8; end
+            S_T4_8: Present_state = S_T5_8;
+            S_T5_8: Present_state = S_T6_8;
             S_T6_8: begin
-                show_state("T6");
                 expect32("brmi not taken", PC, 32'h0000_0011);
                 if (failures == 0) begin
                     $display("PASS: GROUP 3 completed with no failures");
                 end else begin
                     $display("FAIL: GROUP 3 completed with %0d failure(s)", failures);
                 end
-                $display("INFO: FSM-style testbench is holding final state for waveform inspection.");
                 Present_state = S_DONE;
             end
 
