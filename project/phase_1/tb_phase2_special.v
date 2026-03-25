@@ -71,6 +71,19 @@ module tb_phase2_special;
         end
     endtask
 
+    task print_memory_contents;
+        input [LABEL_W-1:0] label;
+        input [8:0] instruction_addr;
+        begin
+            $display("Memory contents (%s):", label);
+            $display("  mem[%03h] = %08h", instruction_addr, DUT.U_DP.U_RAM.memory[instruction_addr]);
+            $display("  mem[065] = %08h", DUT.U_DP.U_RAM.memory[9'h065]);
+            $display("  mem[0C9] = %08h", DUT.U_DP.U_RAM.memory[9'h0C9]);
+            $display("  mem[01F] = %08h", DUT.U_DP.U_RAM.memory[9'h01F]);
+            $display("  mem[082] = %08h", DUT.U_DP.U_RAM.memory[9'h082]);
+        end
+    endtask
+
     initial begin
         Clock = 1'b0;
         failures = 0;
@@ -103,6 +116,7 @@ module tb_phase2_special;
                 DUT.U_DP.U_RAM.memory[9'h000] = encode_ra(OP_MFHI, 4'd5);
                 DUT.U_DP.PC_reg.q = 32'h0000_0000;
                 DUT.U_DP.HI_reg.q = 32'h1234_5678;
+                print_memory_contents("mfhi R5 setup", 9'h000);
                 Present_state = S_T0_1;
             end
             S_T0_1: Present_state = S_T1_1;
@@ -118,6 +132,7 @@ module tb_phase2_special;
                 DUT.U_DP.U_RAM.memory[9'h000] = encode_ra(OP_MFLO, 4'd1);
                 DUT.U_DP.PC_reg.q = 32'h0000_0000;
                 DUT.U_DP.LO_reg.q = 32'h89AB_CDEF;
+                print_memory_contents("mflo R1 setup", 9'h000);
                 Present_state = S_T0_2;
             end
             S_T0_2: Present_state = S_T1_2;

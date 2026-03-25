@@ -90,6 +90,19 @@ module tb_phase2_branch;
         end
     endtask
 
+    task print_memory_contents;
+        input [LABEL_W-1:0] label;
+        input [8:0] instruction_addr;
+        begin
+            $display("Memory contents (%s):", label);
+            $display("  mem[%03h] = %08h", instruction_addr, DUT.U_DP.U_RAM.memory[instruction_addr]);
+            $display("  mem[065] = %08h", DUT.U_DP.U_RAM.memory[9'h065]);
+            $display("  mem[0C9] = %08h", DUT.U_DP.U_RAM.memory[9'h0C9]);
+            $display("  mem[01F] = %08h", DUT.U_DP.U_RAM.memory[9'h01F]);
+            $display("  mem[082] = %08h", DUT.U_DP.U_RAM.memory[9'h082]);
+        end
+    endtask
+
     initial begin
         Clock = 1'b0;
         failures = 0;
@@ -121,7 +134,7 @@ module tb_phase2_branch;
     always @(posedge Clock) begin
         #1;
         case (Present_state)
-            S_CLEAR_1: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b00, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0000; Present_state = S_T0_1; end
+            S_CLEAR_1: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b00, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0000; print_memory_contents("brzr taken setup", 9'h010); Present_state = S_T0_1; end
             S_T0_1: Present_state = S_T1_1;
             S_T1_1: Present_state = S_T2_1;
             S_T2_1: Present_state = S_T3_1;
@@ -130,7 +143,7 @@ module tb_phase2_branch;
             S_T5_1: Present_state = S_T6_1;
             S_T6_1: begin expect32("brzr taken", PC, 32'h0000_0041); Present_state = S_CLEAR_2; end
 
-            S_CLEAR_2: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b00, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0005; Present_state = S_T0_2; end
+            S_CLEAR_2: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b00, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0005; print_memory_contents("brzr not taken setup", 9'h010); Present_state = S_T0_2; end
             S_T0_2: Present_state = S_T1_2;
             S_T1_2: Present_state = S_T2_2;
             S_T2_2: Present_state = S_T3_2;
@@ -139,7 +152,7 @@ module tb_phase2_branch;
             S_T5_2: Present_state = S_T6_2;
             S_T6_2: begin expect32("brzr not taken", PC, 32'h0000_0011); Present_state = S_CLEAR_3; end
 
-            S_CLEAR_3: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b01, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0005; Present_state = S_T0_3; end
+            S_CLEAR_3: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b01, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0005; print_memory_contents("brnz taken setup", 9'h010); Present_state = S_T0_3; end
             S_T0_3: Present_state = S_T1_3;
             S_T1_3: Present_state = S_T2_3;
             S_T2_3: Present_state = S_T3_3;
@@ -148,7 +161,7 @@ module tb_phase2_branch;
             S_T5_3: Present_state = S_T6_3;
             S_T6_3: begin expect32("brnz taken", PC, 32'h0000_0041); Present_state = S_CLEAR_4; end
 
-            S_CLEAR_4: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b01, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0000; Present_state = S_T0_4; end
+            S_CLEAR_4: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b01, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0000; print_memory_contents("brnz not taken setup", 9'h010); Present_state = S_T0_4; end
             S_T0_4: Present_state = S_T1_4;
             S_T1_4: Present_state = S_T2_4;
             S_T2_4: Present_state = S_T3_4;
@@ -157,7 +170,7 @@ module tb_phase2_branch;
             S_T5_4: Present_state = S_T6_4;
             S_T6_4: begin expect32("brnz not taken", PC, 32'h0000_0011); Present_state = S_CLEAR_5; end
 
-            S_CLEAR_5: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b10, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0007; Present_state = S_T0_5; end
+            S_CLEAR_5: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b10, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0007; print_memory_contents("brpl taken setup", 9'h010); Present_state = S_T0_5; end
             S_T0_5: Present_state = S_T1_5;
             S_T1_5: Present_state = S_T2_5;
             S_T2_5: Present_state = S_T3_5;
@@ -166,7 +179,7 @@ module tb_phase2_branch;
             S_T5_5: Present_state = S_T6_5;
             S_T6_5: begin expect32("brpl taken", PC, 32'h0000_0041); Present_state = S_CLEAR_6; end
 
-            S_CLEAR_6: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b10, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'hFFFF_FFF0; Present_state = S_T0_6; end
+            S_CLEAR_6: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b10, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'hFFFF_FFF0; print_memory_contents("brpl not taken setup", 9'h010); Present_state = S_T0_6; end
             S_T0_6: Present_state = S_T1_6;
             S_T1_6: Present_state = S_T2_6;
             S_T2_6: Present_state = S_T3_6;
@@ -175,7 +188,7 @@ module tb_phase2_branch;
             S_T5_6: Present_state = S_T6_6;
             S_T6_6: begin expect32("brpl not taken", PC, 32'h0000_0011); Present_state = S_CLEAR_7; end
 
-            S_CLEAR_7: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b11, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'hFFFF_FFF0; Present_state = S_T0_7; end
+            S_CLEAR_7: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b11, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'hFFFF_FFF0; print_memory_contents("brmi taken setup", 9'h010); Present_state = S_T0_7; end
             S_T0_7: Present_state = S_T1_7;
             S_T1_7: Present_state = S_T2_7;
             S_T2_7: Present_state = S_T3_7;
@@ -184,7 +197,7 @@ module tb_phase2_branch;
             S_T5_7: Present_state = S_T6_7;
             S_T6_7: begin expect32("brmi taken", PC, 32'h0000_0041); Present_state = S_CLEAR_8; end
 
-            S_CLEAR_8: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b11, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0000; Present_state = S_T0_8; end
+            S_CLEAR_8: begin init_memory_defaults(); DUT.U_DP.U_RAM.memory[9'h010] = encode_branch(OP_BR, 4'd3, 2'b11, 19'd48); DUT.U_DP.PC_reg.q = 32'h0000_0010; DUT.U_DP.GPR[3].Rn.q = 32'h0000_0000; print_memory_contents("brmi not taken setup", 9'h010); Present_state = S_T0_8; end
             S_T0_8: Present_state = S_T1_8;
             S_T1_8: Present_state = S_T2_8;
             S_T2_8: Present_state = S_T3_8;

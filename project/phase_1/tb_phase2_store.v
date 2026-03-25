@@ -75,6 +75,19 @@ module tb_phase2_store;
         end
     endtask
 
+    task print_memory_contents;
+        input [LABEL_W-1:0] label;
+        input [8:0] instruction_addr;
+        begin
+            $display("Memory contents (%s):", label);
+            $display("  mem[%03h] = %08h", instruction_addr, DUT.U_DP.U_RAM.memory[instruction_addr]);
+            $display("  mem[065] = %08h", DUT.U_DP.U_RAM.memory[9'h065]);
+            $display("  mem[0C9] = %08h", DUT.U_DP.U_RAM.memory[9'h0C9]);
+            $display("  mem[01F] = %08h", DUT.U_DP.U_RAM.memory[9'h01F]);
+            $display("  mem[082] = %08h", DUT.U_DP.U_RAM.memory[9'h082]);
+        end
+    endtask
+
     initial begin
         Clock = 1'b0;
         failures = 0;
@@ -114,6 +127,7 @@ module tb_phase2_store;
                 DUT.U_DP.U_RAM.memory[9'h000] = encode_rrc(OP_ST, 4'd6, 4'd0, 19'h01F);
                 DUT.U_DP.PC_reg.q = 32'h0000_0000;
                 DUT.U_DP.GPR[6].Rn.q = 32'h0000_0063;
+                print_memory_contents("st 0x1F, R6 setup", 9'h000);
                 Present_state = S_T0_1;
             end
             S_T0_1: Present_state = S_T1_1;
@@ -127,6 +141,7 @@ module tb_phase2_store;
             S_T8_1: Present_state = S_T9_1;
             S_T9_1: begin
                 expect32("st 0x1F, R6 memory readback", DUT.U_DP.U_RAM.memory[9'h01F], 32'h0000_0063);
+                print_memory_contents("st 0x1F, R6 after write", 9'h000);
                 Present_state = S_CLEAR_2;
             end
 
@@ -135,6 +150,7 @@ module tb_phase2_store;
                 DUT.U_DP.U_RAM.memory[9'h000] = encode_rrc(OP_ST, 4'd6, 4'd6, 19'h01F);
                 DUT.U_DP.PC_reg.q = 32'h0000_0000;
                 DUT.U_DP.GPR[6].Rn.q = 32'h0000_0063;
+                print_memory_contents("st 0x1F(R6), R6 setup", 9'h000);
                 Present_state = S_T0_2;
             end
             S_T0_2: Present_state = S_T1_2;
@@ -148,6 +164,7 @@ module tb_phase2_store;
             S_T8_2: Present_state = S_T9_2;
             S_T9_2: begin
                 expect32("st 0x1F(R6), R6 memory readback", DUT.U_DP.U_RAM.memory[9'h082], 32'h0000_0063);
+                print_memory_contents("st 0x1F(R6), R6 after write", 9'h000);
                 if (failures == 0) begin
                     $display("PASS: GROUP 1 completed with no failures");
                 end else begin

@@ -81,6 +81,19 @@ module tb_phase2_load;
         end
     endtask
 
+    task print_memory_contents;
+        input [LABEL_W-1:0] label;
+        input [8:0] instruction_addr;
+        begin
+            $display("Memory contents (%s):", label);
+            $display("  mem[%03h] = %08h", instruction_addr, DUT.U_DP.U_RAM.memory[instruction_addr]);
+            $display("  mem[065] = %08h", DUT.U_DP.U_RAM.memory[9'h065]);
+            $display("  mem[0C9] = %08h", DUT.U_DP.U_RAM.memory[9'h0C9]);
+            $display("  mem[01F] = %08h", DUT.U_DP.U_RAM.memory[9'h01F]);
+            $display("  mem[082] = %08h", DUT.U_DP.U_RAM.memory[9'h082]);
+        end
+    endtask
+
     initial begin
         Clock = 1'b0;
         failures = 0;
@@ -120,6 +133,7 @@ module tb_phase2_load;
                 init_memory_defaults();
                 DUT.U_DP.U_RAM.memory[9'h000] = encode_rrc(OP_LD, 4'd7, 4'd0, 19'h065);
                 DUT.U_DP.PC_reg.q = 32'h0000_0000;
+                print_memory_contents("ld R7, 0x65 setup", 9'h000);
                 Present_state = S_T0_1;
             end
             S_T0_1: Present_state = S_T1_1;
@@ -139,6 +153,7 @@ module tb_phase2_load;
                 DUT.U_DP.U_RAM.memory[9'h000] = encode_rrc(OP_LD, 4'd0, 4'd2, 19'h072);
                 DUT.U_DP.PC_reg.q = 32'h0000_0000;
                 DUT.U_DP.GPR[2].Rn.q = 32'h0000_0057;
+                print_memory_contents("ld R0, 0x72(R2) setup", 9'h000);
                 Present_state = S_T0_2;
             end
             S_T0_2: Present_state = S_T1_2;
@@ -160,6 +175,7 @@ module tb_phase2_load;
                 init_memory_defaults();
                 DUT.U_DP.U_RAM.memory[9'h000] = encode_rrc(OP_LDI, 4'd7, 4'd0, 19'h065);
                 DUT.U_DP.PC_reg.q = 32'h0000_0000;
+                print_memory_contents("ldi R7, 0x65 setup", 9'h000);
                 Present_state = S_T0_3;
             end
             S_T0_3: Present_state = S_T1_3;
@@ -177,6 +193,7 @@ module tb_phase2_load;
                 DUT.U_DP.U_RAM.memory[9'h000] = encode_rrc(OP_LDI, 4'd0, 4'd2, 19'h072);
                 DUT.U_DP.PC_reg.q = 32'h0000_0000;
                 DUT.U_DP.GPR[2].Rn.q = 32'h0000_0057;
+                print_memory_contents("ldi R0, 0x72(R2) setup", 9'h000);
                 Present_state = S_T0_4;
             end
             S_T0_4: Present_state = S_T1_4;

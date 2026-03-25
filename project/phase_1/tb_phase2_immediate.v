@@ -76,6 +76,19 @@ module tb_phase2_immediate;
         end
     endtask
 
+    task print_memory_contents;
+        input [LABEL_W-1:0] label;
+        input [8:0] instruction_addr;
+        begin
+            $display("Memory contents (%s):", label);
+            $display("  mem[%03h] = %08h", instruction_addr, DUT.U_DP.U_RAM.memory[instruction_addr]);
+            $display("  mem[065] = %08h", DUT.U_DP.U_RAM.memory[9'h065]);
+            $display("  mem[0C9] = %08h", DUT.U_DP.U_RAM.memory[9'h0C9]);
+            $display("  mem[01F] = %08h", DUT.U_DP.U_RAM.memory[9'h01F]);
+            $display("  mem[082] = %08h", DUT.U_DP.U_RAM.memory[9'h082]);
+        end
+    endtask
+
     initial begin
         Clock = 1'b0;
         failures = 0;
@@ -117,6 +130,7 @@ module tb_phase2_immediate;
                 DUT.U_DP.U_RAM.memory[9'h000] = encode_rrc(OP_ADDI, 4'd7, 4'd4, 19'h7FFF7);
                 DUT.U_DP.PC_reg.q = 32'h0000_0000;
                 DUT.U_DP.GPR[4].Rn.q = 32'h0000_0034;
+                print_memory_contents("addi R7, R4, -9 setup", 9'h000);
                 Present_state = S_T0_1;
             end
             S_T0_1: Present_state = S_T1_1;
@@ -137,6 +151,7 @@ module tb_phase2_immediate;
                 DUT.U_DP.U_RAM.memory[9'h000] = encode_rrc(OP_ANDI, 4'd7, 4'd4, 19'h071);
                 DUT.U_DP.PC_reg.q = 32'h0000_0000;
                 DUT.U_DP.GPR[4].Rn.q = 32'h0000_00F3;
+                print_memory_contents("andi R7, R4, 0x71 setup", 9'h000);
                 Present_state = S_T0_2;
             end
             S_T0_2: Present_state = S_T1_2;
@@ -154,6 +169,7 @@ module tb_phase2_immediate;
                 DUT.U_DP.U_RAM.memory[9'h000] = encode_rrc(OP_ORI, 4'd7, 4'd4, 19'h071);
                 DUT.U_DP.PC_reg.q = 32'h0000_0000;
                 DUT.U_DP.GPR[4].Rn.q = 32'h0000_0004;
+                print_memory_contents("ori R7, R4, 0x71 setup", 9'h000);
                 Present_state = S_T0_3;
             end
             S_T0_3: Present_state = S_T1_3;
