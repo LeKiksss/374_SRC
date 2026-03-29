@@ -52,7 +52,7 @@ set_global_assignment -name EDA_OUTPUT_DATA_FORMAT "VERILOG HDL" -section_id eda
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_global_assignment -name EDA_TEST_BENCH_ENABLE_STATUS TEST_BENCH_MODE -section_id eda_simulation
-set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH DIV_test -section_id eda_simulation
+set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH LOAD_test -section_id eda_simulation
 set_global_assignment -name EDA_TEST_BENCH_NAME AND_test -section_id eda_simulation
 set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id AND_test
 set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME tb_and -section_id AND_test
@@ -95,6 +95,19 @@ set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME tb_not -section_id NOT_te
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name HEX_FILE phase2_memory_init.hex
+set_global_assignment -name VERILOG_FILE tb_phase2_store.v
+set_global_assignment -name VERILOG_FILE tb_phase2_special.v
+set_global_assignment -name VERILOG_FILE tb_phase2_load.v
+set_global_assignment -name VERILOG_FILE tb_phase2_jump.v
+set_global_assignment -name VERILOG_FILE tb_phase2_io.v
+set_global_assignment -name VERILOG_FILE tb_phase2_immediate.v
+set_global_assignment -name VERILOG_FILE tb_phase2_branch.v
+set_global_assignment -name VERILOG_FILE testbench.v
+set_global_assignment -name VERILOG_FILE tb_addoverflow.v
+set_global_assignment -name VERILOG_FILE select_encode.v
+set_global_assignment -name VERILOG_FILE ram512x32.v
+set_global_assignment -name VERILOG_FILE con_ff.v
 set_global_assignment -name VERILOG_FILE tb_and.v
 set_global_assignment -name VERILOG_FILE general_purpose_register.v
 set_global_assignment -name VERILOG_FILE datapath.v
@@ -119,6 +132,27 @@ set_global_assignment -name VERILOG_FILE tb_ror.v
 set_global_assignment -name VERILOG_FILE tb_rol.v
 set_global_assignment -name VERILOG_FILE tb_neg.v
 set_global_assignment -name VERILOG_FILE tb_not.v
+set_global_assignment -name EDA_TEST_BENCH_NAME LOAD_test -section_id eda_simulation
+set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id LOAD_test
+set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME tb_phase2_load -section_id LOAD_test
+set_global_assignment -name EDA_TEST_BENCH_NAME STORE_test -section_id eda_simulation
+set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id STORE_test
+set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME tb_phase2_store -section_id STORE_test
+set_global_assignment -name EDA_TEST_BENCH_NAME IMMEDIATE_test -section_id eda_simulation
+set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id IMMEDIATE_test
+set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME tb_phase2_immediate -section_id IMMEDIATE_test
+set_global_assignment -name EDA_TEST_BENCH_NAME BRANCH_test -section_id eda_simulation
+set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id BRANCH_test
+set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME tb_phase2_branch -section_id BRANCH_test
+set_global_assignment -name EDA_TEST_BENCH_NAME JUMP_test -section_id eda_simulation
+set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id JUMP_test
+set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME tb_phase2_jump -section_id JUMP_test
+set_global_assignment -name EDA_TEST_BENCH_NAME SPECIAL_test -section_id eda_simulation
+set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id SPECIAL_test
+set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME tb_phase2_special -section_id SPECIAL_test
+set_global_assignment -name EDA_TEST_BENCH_NAME IO_test -section_id eda_simulation
+set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id IO_test
+set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME tb_phase2_io -section_id IO_test
 set_global_assignment -name EDA_TEST_BENCH_FILE tb_and.v -section_id AND_test
 set_global_assignment -name EDA_TEST_BENCH_FILE tb_or.v -section_id OR_test
 set_global_assignment -name EDA_TEST_BENCH_FILE tb_add.v -section_id ADD_test
@@ -132,4 +166,11 @@ set_global_assignment -name EDA_TEST_BENCH_FILE tb_ror.v -section_id ROR_test
 set_global_assignment -name EDA_TEST_BENCH_FILE tb_rol.v -section_id ROL_test
 set_global_assignment -name EDA_TEST_BENCH_FILE tb_neg.v -section_id NEG_test
 set_global_assignment -name EDA_TEST_BENCH_FILE tb_not.v -section_id NOT_test
+set_global_assignment -name EDA_TEST_BENCH_FILE tb_phase2_load.v -section_id LOAD_test
+set_global_assignment -name EDA_TEST_BENCH_FILE tb_phase2_store.v -section_id STORE_test
+set_global_assignment -name EDA_TEST_BENCH_FILE tb_phase2_immediate.v -section_id IMMEDIATE_test
+set_global_assignment -name EDA_TEST_BENCH_FILE tb_phase2_branch.v -section_id BRANCH_test
+set_global_assignment -name EDA_TEST_BENCH_FILE tb_phase2_jump.v -section_id JUMP_test
+set_global_assignment -name EDA_TEST_BENCH_FILE tb_phase2_special.v -section_id SPECIAL_test
+set_global_assignment -name EDA_TEST_BENCH_FILE tb_phase2_io.v -section_id IO_test
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
