@@ -103,6 +103,7 @@ set_global_assignment -name VERILOG_FILE tb_phase2_jump.v
 set_global_assignment -name VERILOG_FILE tb_phase2_io.v
 set_global_assignment -name VERILOG_FILE tb_phase2_immediate.v
 set_global_assignment -name VERILOG_FILE tb_phase2_branch.v
+set_global_assignment -name VERILOG_FILE tb_phase3_cpu.v
 set_global_assignment -name VERILOG_FILE testbench.v
 set_global_assignment -name VERILOG_FILE tb_addoverflow.v
 set_global_assignment -name VERILOG_FILE select_encode.v
@@ -116,7 +117,9 @@ set_global_assignment -name VERILOG_FILE mdr.v
 set_global_assignment -name VERILOG_FILE adder32.v
 set_global_assignment -name VERILOG_FILE addsub32.v
 set_global_assignment -name VERILOG_FILE alu_core.v
+set_global_assignment -name VERILOG_FILE control_unit.v
 set_global_assignment -name VERILOG_FILE datapath_top.v
+set_global_assignment -name VERILOG_FILE mini_src_cpu.v
 set_global_assignment -name VERILOG_FILE phase_1_synth_top.v
 set_global_assignment -name VERILOG_FILE div32_nonrestoring.v
 set_global_assignment -name VERILOG_FILE mult32x32_booth.v
@@ -153,6 +156,9 @@ set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME tb_phase2_special -sectio
 set_global_assignment -name EDA_TEST_BENCH_NAME IO_test -section_id eda_simulation
 set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id IO_test
 set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME tb_phase2_io -section_id IO_test
+set_global_assignment -name EDA_TEST_BENCH_NAME PHASE3_CPU_test -section_id eda_simulation
+set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id PHASE3_CPU_test
+set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME tb_phase3_cpu -section_id PHASE3_CPU_test
 set_global_assignment -name EDA_TEST_BENCH_FILE tb_and.v -section_id AND_test
 set_global_assignment -name EDA_TEST_BENCH_FILE tb_or.v -section_id OR_test
 set_global_assignment -name EDA_TEST_BENCH_FILE tb_add.v -section_id ADD_test
@@ -173,4 +179,5 @@ set_global_assignment -name EDA_TEST_BENCH_FILE tb_phase2_branch.v -section_id B
 set_global_assignment -name EDA_TEST_BENCH_FILE tb_phase2_jump.v -section_id JUMP_test
 set_global_assignment -name EDA_TEST_BENCH_FILE tb_phase2_special.v -section_id SPECIAL_test
 set_global_assignment -name EDA_TEST_BENCH_FILE tb_phase2_io.v -section_id IO_test
+set_global_assignment -name EDA_TEST_BENCH_FILE tb_phase3_cpu.v -section_id PHASE3_CPU_test
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

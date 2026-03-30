@@ -15,6 +15,7 @@ module Datapath (
     input  wire        MDRin,
     input  wire        CONin,
     input  wire        Out_Portin,
+    input  wire        R12in_force,
 
     // Encoded select for the shared 32‑bit bus
     input  wire [4:0]  BusSel,
@@ -88,6 +89,7 @@ module Datapath (
 
     // General‑purpose register file R0–R15
     wire [31:0] R [0:15];
+    wire [15:0] Rin_effective = Rin | (R12in_force ? 16'h1000 : 16'h0000);
 
     genvar i;
     generate
@@ -95,7 +97,7 @@ module Datapath (
             register #(.DATA_WIDTH_IN(32), .DATA_WIDTH_OUT(32)) Rn (
                 .clear(Clear),
                 .clock(Clock),
-                .enable(Rin[i]),
+                .enable(Rin_effective[i]),
                 .BusMuxOut(BusMuxOut),
                 .BusMuxIn(R[i])
             );

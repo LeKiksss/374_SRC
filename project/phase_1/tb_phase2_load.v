@@ -36,7 +36,7 @@ module tb_phase2_load;
     Datapath_top DUT (
         .Clock(Clock), .Clear(Clear), .Gra(Gra), .Grb(Grb), .Grc(1'b0), .Rin(Rin), .Rout(1'b0), .BAout(BAout),
         .PCin(PCin), .IRin(IRin), .Yin(Yin), .MARin(MARin), .HIin(1'b0), .LOin(1'b0), .Zin(Zin), .MDRin(MDRin),
-        .CONin(1'b0), .Out_Portin(1'b0), .IncPC(IncPC), .Read(Read), .Write(1'b0), .PCout(PCout),
+        .CONin(1'b0), .Out_Portin(1'b0), .R12in_force(1'b0), .IncPC(IncPC), .Read(Read), .Write(1'b0), .PCout(PCout),
         .MDRout(MDRout), .HIout(1'b0), .LOout(1'b0), .Zhighout(1'b0), .Zlowout(Zlowout),
         .In_Portout(1'b0), .Cout(Cout), .AND(1'b0), .OR(1'b0), .NOT_op(1'b0), .NEG(1'b0),
         .SHR(1'b0), .SHRA(1'b0), .SHL(1'b0), .ROR(1'b0), .ROL(1'b0), .ADD(ADD), .SUB(1'b0), .MUL(1'b0), .DIV(1'b0),
@@ -99,6 +99,12 @@ module tb_phase2_load;
         failures = 0;
         Present_state = S_CLEAR_1;
         $display("==== Load Group ====");
+    end
+
+    initial begin
+        wait (Present_state == S_DONE);
+        #1;
+        $finish;
     end
 
     always @(*) begin

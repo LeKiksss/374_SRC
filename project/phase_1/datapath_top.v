@@ -21,6 +21,7 @@ module Datapath_top (
     input  wire        MDRin,
     input  wire        CONin,
     input  wire        Out_Portin,
+    input  wire        R12in_force,
 
     // Memory and PC increment controls
     input  wire        IncPC,
@@ -168,6 +169,7 @@ module Datapath_top (
         .MDRin(MDRin),
         .CONin(CONin),
         .Out_Portin(Out_Portin),
+        .R12in_force(R12in_force),
         .BusSel(BusSel),
         .AND(AND),
         .OR(OR),
