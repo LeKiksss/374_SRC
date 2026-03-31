@@ -80,7 +80,9 @@ module tb_phase3_cpu;
     reg saw_jal;
     reg saw_jr;
 
-    mini_src_cpu DUT (
+    mini_src_cpu #(
+        .RAM_INIT_FILE("phase3_memory_init.hex")
+    ) DUT (
         .Clock(Clock),
         .Reset(Reset),
         .Stop(Stop),
@@ -208,57 +210,7 @@ module tb_phase3_cpu;
     task load_phase3_program;
         begin
             clear_memory();
-
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h000] = encode_i(OP_LDI, 4'd5, 4'd0, 32'h0000_0043);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h001] = encode_i(OP_LDI, 4'd5, 4'd5, 32'h0000_0006);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h002] = encode_i(OP_LD,  4'd4, 4'd0, 32'h0000_0089);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h003] = encode_i(OP_LDI, 4'd4, 4'd4, 32'h0000_0004);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h004] = encode_i(OP_LD,  4'd0, 4'd4, -32'sd8);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h005] = encode_i(OP_LDI, 4'd2, 4'd0, 32'h0000_0004);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h006] = encode_i(OP_LDI, 4'd5, 4'd0, 32'h0000_0087);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h007] = encode_b(OP_BR,  4'd5, BR_MI, 32'sd3);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h008] = encode_i(OP_LDI, 4'd5, 4'd5, 32'h0000_0005);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h009] = encode_i(OP_LD,  4'd1, 4'd5, -32'sd3);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h00A] = encode_m(OP_NOP);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h00B] = encode_b(OP_BR,  4'd1, BR_PL, 32'sd2);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h00C] = encode_i(OP_LDI, 4'd3, 4'd5, 32'h0000_0007);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h00D] = encode_i(OP_LDI, 4'd7, 4'd3, -32'sd4);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h00E] = encode_r(OP_ADD,  4'd7, 4'd5, 4'd2);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h00F] = encode_i(OP_ADDI, 4'd1, 4'd1, 32'sd3);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h010] = encode_i(OP_NEG,  4'd1, 4'd1, 32'sd0);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h011] = encode_i(OP_NOT,  4'd1, 4'd1, 32'sd0);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h012] = encode_i(OP_ANDI, 4'd1, 4'd1, 32'h0000_000F);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h013] = encode_r(OP_ROR,  4'd4, 4'd0, 4'd2);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h014] = encode_i(OP_ORI,  4'd1, 4'd4, 32'h0000_0005);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h015] = encode_r(OP_SHRA, 4'd4, 4'd1, 4'd2);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h016] = encode_r(OP_SHR,  4'd5, 4'd5, 4'd2);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h017] = encode_i(OP_ST,   4'd5, 4'd0, 32'h0000_00A3);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h018] = encode_r(OP_ROL,  4'd5, 4'd0, 4'd2);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h019] = encode_r(OP_OR,   4'd7, 4'd2, 4'd0);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h01A] = encode_r(OP_AND,  4'd4, 4'd5, 4'd0);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h01B] = encode_i(OP_ST,   4'd7, 4'd4, 32'h0000_0089);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h01C] = encode_r(OP_SUB,  4'd0, 4'd5, 4'd7);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h01D] = encode_r(OP_SHL,  4'd4, 4'd5, 4'd2);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h01E] = encode_i(OP_LDI,  4'd7, 4'd0, 32'h0000_0007);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h01F] = encode_i(OP_LDI,  4'd3, 4'd0, 32'h0000_0019);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h020] = encode_i(OP_MUL,  4'd3, 4'd7, 32'sd0);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h021] = encode_j(OP_MFHI, 4'd1);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h022] = encode_j(OP_MFLO, 4'd6);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h023] = encode_i(OP_DIV,  4'd3, 4'd7, 32'sd0);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h024] = encode_i(OP_LDI,  4'd8, 4'd7, 32'h0000_0002);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h025] = encode_i(OP_LDI,  4'd9, 4'd3, -32'sd4);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h026] = encode_i(OP_LDI,  4'd10, 4'd6, 32'h0000_0003);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h027] = encode_i(OP_LDI,  4'd11, 4'd1, 32'h0000_0005);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h028] = encode_j(OP_JAL,  4'd10);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h029] = encode_m(OP_HALT);
-
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h0B2] = encode_r(OP_ADD, 4'd14, 4'd8,  4'd10);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h0B3] = encode_r(OP_SUB, 4'd13, 4'd9,  4'd11);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h0B4] = encode_r(OP_SUB, 4'd14, 4'd14, 4'd13);
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h0B5] = encode_j(OP_JR,  4'd12);
-
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h089] = 32'h0000_00A7;
-            DUT.U_DP_TOP.U_DP.U_RAM.memory[9'h0A3] = 32'h0000_0068;
+            $readmemh("phase3_memory_init.hex", DUT.U_DP_TOP.U_DP.U_RAM.memory);
         end
     endtask
 
