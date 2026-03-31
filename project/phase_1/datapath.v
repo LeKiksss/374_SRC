@@ -1,4 +1,6 @@
-module Datapath (
+module Datapath #(
+    parameter RAM_INIT_FILE = ""
+) (
     input  wire        Clock,
     input  wire        Clear,
 
@@ -147,7 +149,9 @@ module Datapath (
 
     assign memory_data_bus = Write ? MDR_data : 32'bz;
 
-    ram512x32 U_RAM (
+    ram512x32 #(
+        .INIT_FILE(RAM_INIT_FILE)
+    ) U_RAM (
         .Clock(Clock),
         .Read(Read),
         .Write(Write),

@@ -1,4 +1,6 @@
-module Datapath_top (
+module Datapath_top #(
+    parameter RAM_INIT_FILE = ""
+) (
     input  wire        Clock,
     input  wire        Clear,
 
@@ -154,7 +156,9 @@ module Datapath_top (
         else if (Cout)       BusSel = BUS_COUT;
     end
 
-    Datapath U_DP (
+    Datapath #(
+        .RAM_INIT_FILE(RAM_INIT_FILE)
+    ) U_DP (
         .Clock(Clock),
         .Clear(Clear),
         .Rin(GPRin),

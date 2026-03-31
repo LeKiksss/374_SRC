@@ -1,4 +1,6 @@
-module mini_src_cpu (
+module mini_src_cpu #(
+    parameter RAM_INIT_FILE = ""
+) (
     input  wire        Clock,
     input  wire        Reset,
     input  wire        Stop,
@@ -101,7 +103,9 @@ module mini_src_cpu (
         .state_dbg(state_dbg)
     );
 
-    Datapath_top U_DP_TOP (
+    Datapath_top #(
+        .RAM_INIT_FILE(RAM_INIT_FILE)
+    ) U_DP_TOP (
         .Clock(Clock),
         .Clear(Reset),
         .Gra(Gra),
