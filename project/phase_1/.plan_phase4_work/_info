@@ -1,0 +1,369 @@
+m255
+K4
+z2
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dC:/Users/kikok/Desktop/374_SRC/project/phase_1
+vadder32
+Z1 !s110 1774957030
+!i10b 1
+!s100 Yfol@Wco]oaO^S1flCae^0
+IZaJRd699b2ElIj`kP=8GT1
+Z2 VDg1SIo80bB@j0V0VzS_@n1
+R0
+Z3 w1774819000
+8adder32.v
+Fadder32.v
+L0 1
+Z4 OV;L;10.5b;63
+r1
+!s85 0
+31
+Z5 !s108 1774957030.000000
+Z6 !s107 tb_phase3_cpu.v|phase_1_synth_top.v|mini_src_cpu.v|control_unit.v|ram512x32.v|con_ff.v|select_encode.v|div32_nonrestoring.v|mult32x32_booth.v|adder32.v|addsub32.v|inc32.v|alu_core.v|general_purpose_register.v|mdr.v|datapath.v|datapath_top.v|
+Z7 !s90 -work|.plan_phase4_work|datapath_top.v|datapath.v|mdr.v|general_purpose_register.v|alu_core.v|inc32.v|addsub32.v|adder32.v|mult32x32_booth.v|div32_nonrestoring.v|select_encode.v|con_ff.v|ram512x32.v|control_unit.v|mini_src_cpu.v|phase_1_synth_top.v|tb_phase3_cpu.v|
+!i113 1
+Z8 o-work .plan_phase4_work
+Z9 tCvgOpt 0
+vaddsub32
+R1
+!i10b 1
+!s100 `cBhk[Q^_@[le<J`Xn;FY2
+Iz5maKh]2DZ`4zYR1JcJcF1
+R2
+R0
+R3
+8addsub32.v
+Faddsub32.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+valu_core
+R1
+!i10b 1
+!s100 ><0gJ[W1VB_[[02m2zNQ:3
+IUCHL2:`k;fc]@@6<n[BAN0
+R2
+R0
+R3
+8alu_core.v
+Falu_core.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vcon_ff
+R1
+!i10b 1
+!s100 Df;f;9RgO0HVV:IB9ldI11
+Ijk5;=h6HJc[V=`8Ok_^Xh2
+R2
+R0
+Z10 w1774819062
+8con_ff.v
+Fcon_ff.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vcontrol_unit
+R1
+!i10b 1
+!s100 [K9:19OcRDT=U;m_bV<NA0
+Il?;DFOzYNiJhN4cAz`g8G0
+R2
+R0
+Z11 w1774825975
+8control_unit.v
+Fcontrol_unit.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vDatapath
+R1
+!i10b 1
+!s100 1UoF_2<C?In;:7Az@`8_W2
+Ig3H`08bJoi_HZG1>TQ@JV1
+R2
+R0
+Z12 w1774825859
+8datapath.v
+Fdatapath.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+n@datapath
+vDatapath_top
+R1
+!i10b 1
+!s100 bE[ZDGJ3jC<Y1bKR3PLhH1
+IX2FM9:?]aRdiaI5Bn?UZ00
+R2
+R0
+R12
+8datapath_top.v
+Fdatapath_top.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+n@datapath_top
+vdiv32_nonrestoring
+R1
+!i10b 1
+!s100 nio1ggPc<8C<L_]O`Ci[a0
+IB@YKPOE?m<h29JCNiWKOj2
+R2
+R0
+R3
+8div32_nonrestoring.v
+Fdiv32_nonrestoring.v
+L0 3
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vinc32
+R1
+!i10b 1
+!s100 7cR^8o2mT<<V_D0]7TZ;<0
+I@[4?_ch8;[63Lh7j7YTko1
+R2
+R0
+R3
+8inc32.v
+Finc32.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vMDR
+R1
+!i10b 1
+!s100 =bl4_fN_T_BDk`fHn6c7A2
+I>Tj>6e1a6Z03I=;5Ofc5Z3
+R2
+R0
+R3
+8mdr.v
+Fmdr.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+n@m@d@r
+vmini_src_cpu
+R1
+!i10b 1
+!s100 7oh3h8Hj`@07lhE80OnAf1
+IVm4IcXRgfW;>S04>JA2Fn2
+R2
+R0
+R11
+8mini_src_cpu.v
+Fmini_src_cpu.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vmult32x32_booth
+R1
+!i10b 1
+!s100 EJ^]0akI3W=T?DPHGE]Hl1
+ImBg=4cR[biV6dK0NjDJPo3
+R2
+R0
+R3
+8mult32x32_booth.v
+Fmult32x32_booth.v
+L0 2
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vphase_1_synth_top
+R1
+!i10b 1
+!s100 _A=BhEPHFbim=VT[G2V0V3
+IMoGoB_^5G5K^PTlAlk=Oj3
+R2
+R0
+R11
+8phase_1_synth_top.v
+Fphase_1_synth_top.v
+L0 4
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vram512x32
+R1
+!i10b 1
+!s100 ]glkP55o=WZJniJfei29;1
+IeBoLeZdj7WLAm1cQ0XP5X1
+R2
+R0
+R10
+8ram512x32.v
+Fram512x32.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vregister
+R1
+!i10b 1
+!s100 @]SeX_3nVR26zO=84Co6b3
+IQ_dj@WJ@fIHiPU:6;o1C=1
+R2
+R0
+R3
+8general_purpose_register.v
+Fgeneral_purpose_register.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vselect_encode
+R1
+!i10b 1
+!s100 AVKLmJYX2b]M>nOS8IoMK0
+I4GWJ3Ta<BHmX[mmQ?KR9K1
+R2
+R0
+R10
+8select_encode.v
+Fselect_encode.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vtb_phase3_cpu
+R1
+!i10b 1
+!s100 8WEI^79H^:l:IYO6W0V2c2
+IGRaHoV>5KAc<hOASWc[@g3
+R2
+R0
+w1774826268
+8tb_phase3_cpu.v
+Ftb_phase3_cpu.v
+L0 3
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9

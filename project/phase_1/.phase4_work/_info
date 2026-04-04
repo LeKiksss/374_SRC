@@ -1,0 +1,433 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dC:/Users/kikok/Desktop/374_SRC/project/phase_1
+vadder32
+Z1 !s110 1774961082
+!i10b 1
+!s100 Yfol@Wco]oaO^S1flCae^0
+I=@RY8Ko8C<T1bPmGPF_Y41
+Z2 VDg1SIo80bB@j0V0VzS_@n1
+R0
+Z3 w1774819000
+8adder32.v
+Fadder32.v
+L0 1
+Z4 OV;L;10.5b;63
+r1
+!s85 0
+31
+Z5 !s108 1774961082.000000
+Z6 !s107 tb_phase4_cpu.v|tb_phase3_cpu.v|phase_1_synth_top.v|mini_src_cpu.v|control_unit.v|ram512x32.v|con_ff.v|select_encode.v|div32_nonrestoring.v|mult32x32_booth.v|adder32.v|addsub32.v|inc32.v|alu_core.v|general_purpose_register.v|mdr.v|datapath.v|datapath_top.v|hex7seg_active_low.v|board_clock_helper.v|
+Z7 !s90 -work|.phase4_work|board_clock_helper.v|hex7seg_active_low.v|datapath_top.v|datapath.v|mdr.v|general_purpose_register.v|alu_core.v|inc32.v|addsub32.v|adder32.v|mult32x32_booth.v|div32_nonrestoring.v|select_encode.v|con_ff.v|ram512x32.v|control_unit.v|mini_src_cpu.v|phase_1_synth_top.v|tb_phase3_cpu.v|tb_phase4_cpu.v|
+!i113 1
+Z8 o-work .phase4_work
+Z9 tCvgOpt 0
+vaddsub32
+R1
+!i10b 1
+!s100 `cBhk[Q^_@[le<J`Xn;FY2
+IfPA[cB2R<BgYofoNzIdJB0
+R2
+R0
+R3
+8addsub32.v
+Faddsub32.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+valu_core
+R1
+!i10b 1
+!s100 ><0gJ[W1VB_[[02m2zNQ:3
+I[Xnh2Dg]i>gm_b528kIfT0
+R2
+R0
+R3
+8alu_core.v
+Falu_core.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vboard_clock_helper
+R1
+!i10b 1
+!s100 V7foPRmCLXo__QU1d[kd>3
+IO3l3B]zfM2OgUFo?<c;3h1
+R2
+R0
+Z10 w1774960881
+8board_clock_helper.v
+Fboard_clock_helper.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vcon_ff
+R1
+!i10b 1
+!s100 Df;f;9RgO0HVV:IB9ldI11
+Ic[QN0T7<mGHmDDEDPKR=22
+R2
+R0
+Z11 w1774819062
+8con_ff.v
+Fcon_ff.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vcontrol_unit
+R1
+!i10b 1
+!s100 [K9:19OcRDT=U;m_bV<NA0
+I7o:WHm5oTzhM;OR2;78GQ2
+R2
+R0
+w1774825975
+8control_unit.v
+Fcontrol_unit.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vDatapath
+R1
+!i10b 1
+!s100 NT]Sc9emG5OTzKkg9W1l32
+ISMcDXd<4BmhccD@4>^l;_1
+R2
+R0
+Z12 w1774960757
+8datapath.v
+Fdatapath.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+n@datapath
+vDatapath_top
+R1
+!i10b 1
+!s100 Y?[KLnWol=VMP544:dbJl0
+I<HO0_YZo4I>b0egheFGlX2
+R2
+R0
+R12
+8datapath_top.v
+Fdatapath_top.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+n@datapath_top
+vdiv32_nonrestoring
+R1
+!i10b 1
+!s100 nio1ggPc<8C<L_]O`Ci[a0
+I:LAj5z`;?550E2J<oEZ=m2
+R2
+R0
+R3
+8div32_nonrestoring.v
+Fdiv32_nonrestoring.v
+L0 3
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vhex7seg_active_low
+R1
+!i10b 1
+!s100 EVY_m@V;QZC4^h]a>fi6[0
+IIZj=Sf9ehZDd<?N3QW>Vo1
+R2
+R0
+R10
+8hex7seg_active_low.v
+Fhex7seg_active_low.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vinc32
+R1
+!i10b 1
+!s100 7cR^8o2mT<<V_D0]7TZ;<0
+ITJ985d2@ECXh]c]_FbhnH0
+R2
+R0
+R3
+8inc32.v
+Finc32.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vMDR
+R1
+!i10b 1
+!s100 =bl4_fN_T_BDk`fHn6c7A2
+I]>nVif`ZXlG[TcT`=zTc30
+R2
+R0
+R3
+8mdr.v
+Fmdr.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+n@m@d@r
+vmini_src_cpu
+R1
+!i10b 1
+!s100 _eULJZzI8>AdN8_FhFV3c0
+IoHDkQ>=R@FDWnaPe]JS2=1
+R2
+R0
+R12
+8mini_src_cpu.v
+Fmini_src_cpu.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vmult32x32_booth
+R1
+!i10b 1
+!s100 EJ^]0akI3W=T?DPHGE]Hl1
+I0eWi<ekRQQLJ;P[a4ARm11
+R2
+R0
+R3
+8mult32x32_booth.v
+Fmult32x32_booth.v
+L0 2
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vphase_1_synth_top
+R1
+!i10b 1
+!s100 `R4Kaf]5l?I;`l7^@GfTi0
+Iz_89:0L^<Bk7_Y2f;SG?F2
+R2
+R0
+R10
+8phase_1_synth_top.v
+Fphase_1_synth_top.v
+L0 3
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vram512x32
+R1
+!i10b 1
+!s100 RngjO`Q>dH;JK;5NVW=OZ3
+IlB3X4MHi<[RnAW2d4iQkF3
+R2
+R0
+R12
+8ram512x32.v
+Fram512x32.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vregister
+R1
+!i10b 1
+!s100 @]SeX_3nVR26zO=84Co6b3
+I07hH`V^C[HUVNdn^X9D1U3
+R2
+R0
+R3
+8general_purpose_register.v
+Fgeneral_purpose_register.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vselect_encode
+R1
+!i10b 1
+!s100 AVKLmJYX2b]M>nOS8IoMK0
+IbLB=IiKSaS<RF2I]AHZdS1
+R2
+R0
+R11
+8select_encode.v
+Fselect_encode.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vtb_phase3_cpu
+R1
+!i10b 1
+!s100 8WEI^79H^:l:IYO6W0V2c2
+Ii`Te18^Xb@=7[`;GRo;E<2
+R2
+R0
+w1774826268
+8tb_phase3_cpu.v
+Ftb_phase3_cpu.v
+L0 3
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
+vtb_phase4_cpu
+R1
+!i10b 1
+!s100 nRZ1_hn3IfUzeJ0aHE7SW0
+I7ahh=Ube80WGn:M>0fH1o1
+R2
+R0
+w1774961029
+8tb_phase4_cpu.v
+Ftb_phase4_cpu.v
+L0 3
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+R9
